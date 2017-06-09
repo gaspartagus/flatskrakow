@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "gumtree-hacker",
+  "private_key_id": "c5046b2b94117990737760f837c6407358c68c26",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC4b/BOkO8dBWqE\nFbwIj/RIllTQoB4INdbMTq0ZCTZHJ7pU9tM/ukFGPHIZBHJ2Jl5FUeqXxBixskkf\nVYtxykJxXETWykJNGP14kOgr0h166RxtJHrodqWfwjp9II3ya8HhBeFaapb7VOdS\ndwclW0vz+A7KW7dlSOgjewkVt1ZUtAbvGBrMz37CKEs062NuIXyjyTx2B8UA6Ueu\nNiiXGuXxVcbW5Zv3rfwYl6ef6H5FftS6G15REJtOO90bOrvShzs0DBURwgcudKRG\nsxppT1KhYgthZVoXnTP+rgcEwnKxxKqBlB+U1SYSyoDHys/aUU424AsYaGl7qoew\nZWSr94rJAgMBAAECggEAAaC/pHU4HmpVHU9C9+k2XlAmYD+I4v4U/ua9tXl8zJ4R\nBtg1YeFTMMCj6gIy1PBj11/grqrU+XeMg0MU6PdAhMyMJoBbRgqFDTlWipwkirh6\nmeDZ2AoDuPrkxi82qt0Q4BC2WMm/+qiuOy6mBgpDNmcaJqbZLJg7GqS8E4BzudRn\nmiQeW8gnzR/98UQ2prySHu2pJye9G4I0n3vRLarVmOMDIwoNbXuG0w3ymb9Tu05+\nmOEywvlz1Chicg91LyAaWd0UoAUqeB0/Qd1AvTeu85D87HsLPLlts+W0o/xUPIlp\n1Pq9GI1zmA50LKHFK70H5gMhi7ZPjxeNsOZbJKHXAQKBgQDx2Q6iJlkCw/ZRta+q\nqwY7HMlUciGYOjOw7YKdVpxR5HKKl0UY62/b81F0VRNSkjkFYGl6a3TUAbOKLTGZ\nSGhetEQqA7elm3aiInRYWz6rctFx2xHdDHNxFG069ziFt07HB5GvfMc66xlKqYCK\nV88EWPyEpH3eudM6rMI9qkobyQKBgQDDOtsYZs1o5O6Vh/EO9BhQOWjK+u4UeUVl\n6gO9ouupb1OF/CoDihihclMO3HJ0BHSPgxcw/bmqFBFN9P5QLZwrmjLWVtdc5URl\nClUsBfLtU7q9M4I/ZCdzqf54gnXuSqmm5NZHLRwudPPOWz1lRx4B7rFclw1dkT09\nb04WxCt3AQKBgDz1kCmw7siyqjioShIDr7tgoyKk7fDX4sWa6ExOU3KU2YYzYNhK\nJ9TR/NsMwqUSdEr1pUCVK0pw71dJ0vGm/Z+5YmEQtM6KZBm0A41t2lsOwtom9Na5\n17NOCcZOIDIcJUAnmUIZeoJQVfyqwtqcDXM0Fto8N/nW7vYgK4mtjaZ5AoGAKm0F\n492jUeI+PtyV9CvzhKuVLFcvmd9ox2b9fR6EnAOHYRyVfMNr6tnPVvFtJe05714L\nkifxSxalVA2jnoTq5UbTOWUR1Cw2msaOD80TJ6QEds1UxrXbJPWSSVoAitJK3+vm\n7PzOnQHpYbTOOM4lpUHb5UUmMGk5p7oifCwRTgECgYBA+69oGChosJo94TfNBJ7p\nEv+eEYzbTGbPte6mC6JMBBBHCGTrV5VVWD17yTaEeKeZKquEUH3I5PwXMuqEDFap\npMUt2RTos28KfRuKkP7iHyCxiYG15D5jDRIYq6cuSBsJPSM4aMLAIOhLoQMa55/B\nhZsam2zIpY+c1BmYanVkYg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-0vi9o@gumtree-hacker.iam.gserviceaccount.com",
+  "client_id": "111120664953067965995",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-0vi9o%40gumtree-hacker.iam.gserviceaccount.com"
+}
