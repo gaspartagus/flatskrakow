@@ -1,0 +1,38 @@
+<menu>
+
+
+
+<div id="menu" class="card-panel">
+  <h5>Gumtree Ads Kraków</h5>
+  <p>A map of the gumtree adverts for appartments and rooms to rent <b>directly by owners</b> in Krakow</p>
+  <p>Legend : </p>
+  <ul>
+    <li><img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png">Position given by the owner</li>
+    <li><img src="http://maps.google.com/mapfiles/ms/icons/orange-dot.png">Position guessed from the street name in the title or the description of the advert</li>
+    <li><img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png">All other un-located adverts</li>
+  </ul>
+  <div class="row">
+    <div class="input-field col s12">
+      <input ref="price" id="price" type="number" onkeyup={ edit }>
+      <label for="price">Maximum Price (zł)</label>
+    </div>
+  </div>
+</div>
+
+<script>
+
+edit(e){
+	window.price = this.refs.price.value;
+	console.log(price)
+	drawFiltered();
+}
+
+
+
+
+
+</script>
+
+
+
+</menu>

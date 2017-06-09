@@ -1,0 +1,275 @@
+<chapitre>
+
+<div class="formulaire scrollspy row" id="arh_{ category }">
+
+  <div class="chapitre col s6 m7">
+    <h4>{ titre }</h4>
+  </div>
+  <div class="resultat col s6 m5 side-number">
+    <h4 class="right-align">
+      <span id="{ category }_total">0.0</span>t</span>
+    </h4>
+    <span class="tonsofco2 right-align">{ text1 }</span>
+  </div>
+
+  <div class="questions col s12">
+    <div class="card-panel">
+
+      <yield from="questions"/>
+
+      <a class="info-button" href="#modal_{category}" ref="info"><i class="material-icons info">info_outline</i></a>
+    </div>
+  </div>
+
+  <div class="col s12 sustainable-title"><span>{ text2 }</span></div>
+
+  <yield from="actions"/>
+
+</div>
+
+<div id="modal_{category}" class="modal bottom-sheet" ref="modal">
+  <div class="modal-content">
+    <p class="explanation"><raw content="{ langue(modals[category]) }"/></p>
+    <p>Sources :</p>
+    <ul>
+      <li each={ modals[category].sources } class="lien"><lien source="{ i }"></lien></li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+  </div>
+</div>
+
+<script>
+
+this.items = opts.items;
+this.category = opts.category;
+
+
+
+var text = {
+  text1 : {
+    en : "tons of CO2 per person per year",
+    fr : "tonnes de CO2 par personne par an"
+  },
+  text2 : {
+    en : "SUSTAINABLE ACTIONS",
+    fr : "ACTIONS DURABLES"
+  },
+  text3 : {
+    en : "",
+    fr : ""
+  }
+}
+
+var titres = {
+  country : {
+    en : "country",
+    fr : "pays"
+  },
+  house : {
+    en : "house",
+    fr : "maison"
+  },
+  car : {
+    en : "car",
+    fr : "voiture"
+  },
+  plane : {
+    en : "plane",
+    fr : "avion"
+  },
+  food : {
+    en : "food",
+    fr : "alimentation"
+  },
+  goods : {
+    en : "goods",
+    fr : "biens"
+  },
+}
+
+this.modals = {
+  country : {
+    sources: [{i: "eureapa"}],
+    en: 'The average footprint of a citizen of your country is calculated using the data from the European project <b>Eureapa</b>. It accounts for both the direct emissions : using your car, heating your house, and for the indirect emissions : for example production of smartphones in China, cotton agriculture in India. The data is from 2004 and deserves an update, but it is still believed to be accurate in showing orders of magnitude.<br>Please note the whole calculation, all the CO2 numbers are in the unit : <b>kilograms (or tons) of CO2 equivalent</b>. They take into account other greenhouse gases as methane or NO2, but are labelled as kg of CO2 for simplicity.',
+    fr: "L\'empreinte carbone moyenne d\'un citoyen de votre pays est calculée en utilisant les données du projet européen <b>Eureapa</b>. Elle prend compte à la fois les émissions directes: utiliser votre voiture, chauffer votre maison, et les émissions indirectes: par exemple la production de smartphones en Chine ou la culture du coton en Inde. Les données datent de 2004 et ne prennent pas en compte la rapide évolution du monde du numérique, mais elle montrent avec justesse la plupart des émissions.<br>Notez que pendant tout le calcul, tous les chiffres d’empreinte carbone sont dans l'unité: <b>kilogrammes (ou tonnes) de CO2 équivalent</b>. Ils tiennent compte d'autres gaz à effet de serre comme le méthane ou le NO2, mais sont appelés kilogrammes de CO2 pour simplifier la lecture."
+  },
+  house : {
+    sources: [{i: "tabula"},{i: "odyssee"}],
+    en: 'The greenhouse gas emissions from your home are computed using several sources of data. The heating energy is calculated with the data from the <b>Tabula web tool</b>, which classifies buildings in year of construction, country of the EU and housing type. For almost all countries (except Sweden), the surface heating coefficient (in kWh per m2 per year) depends mainly on the year of construction of the building. Thus the total emissions for home heating are calculated from the surface, year of construction and heating fuel of the apartment. The rest of the emissions (water heating, electric appliances and cooking) are calculated using the average energy mix, available in the <b>Odyssee database</b>.',
+    fr: "Les émissions de gaz à effet de serre de votre maison sont calculées à l'aide de plusieurs sources de données. L'énergie de chauffage est calculée avec les données de l'outil <b>Tabula webtool</b>, qui classifie les bâtiments par année de construction, par pays de l'UE et par type de logement. Pour presque tous les pays (sauf la Suède), l'énergie surfacique de chauffage (en kWh par m2 par an) dépend principalement de l'année de construction du bâtiment. Ainsi, les émissions totales pour le chauffage domestique sont calculées à partir de la surface, de l'année de construction et du type de carburant. Le reste des émissions (chauffe-eau, appareils électriques et cuisson) est calculé en utilisant le mix énergétique moyen, disponible dans la base de données <b>Odyssee</b>."
+  },
+  car : {
+    sources: [{i: "defra"}],
+    en: 'The greenhouse gas emissions from driving your car are calculated using <b>DEFRA’s conversion factors</b>. They allow to convert the amount of fuel used by the car into kilograms of CO2, depending on the type of fuel. If you put 0% at “<i>How often do you drive alone</i>”, it is considered that there are on average two and half persons (including you) in the car, thus dividing your emissions by 2,5.',
+    fr: "Les émissions de gaz à effet de serre de votre voiture sont calculées en utilisant les facteurs de conversion de <b>DEFRA</b>. Ils permettent de convertir la quantité de carburant utilisée par la voiture en kilogrammes de CO2, selon le type de carburant. Si vous mettez 0% à \"<i>À quelle fréquence conduisez-vous seul</i>\", il est alors considéré qu'il y a en moyenne deux personnes et demi (dont vous) dans la voiture, ce qui divise vos émissions par 2,5 ."
+  },
+  plane : {
+    sources: [{i: "defra"},{i: "planespeed"}],
+    en: 'The greenhouse gas emissions from taking the plane are calculated using <b>DEFRA’s conversion factors</b>. They allow to convert the amount of kilometres flown into kilograms of CO2, depending on the distance flown and the seat density (less emissions in economic class). The formula for converting the flight time to the flight distance was obtain by performing a linear regression of data form GreatCircleMapper',
+    fr: "Les émissions de gaz à effet de serre des vols en avion sont calculées en utilisant les facteurs de conversion de <b>DEFRA</b>. Ils permettent de convertir la quantité de kilomètres parcourus en kilogrammes de CO2, en fonction de la distance de vol et de l'espacement des sièges (moins d'émissions en classe économique). La formule pour convertir le temps de vol en distance de vol a été obtenue en effectuant une régression linéaire de données de GreatCircleMapper."
+  },
+  food : {
+    sources: [{i: "ukdiets"},{i: "diets"}],
+    en: 'The greenhouse gas emissions from your food diet rely on a personal study from an individual climate change advocate : <b>shrinkthatfootprint.com</b>. Although the results are not proof tested and regional-dependent, they are consistent with the average values from the Eureapa project and an accurate study of British diets ',
+    fr: "Les émissions de gaz à effet de serre de votre alimentation sont basées sur une étude d'un défenseur du changement climatique: <b>shrinkthatfootprint.com</b>. Bien que les résultats ne soient pas issus d'une étude scientifique, ils sont compatibles avec les valeurs moyennes du projet Eureapa ainsi que celle d'une étude plus précise du régime alimentaire des Anglais"
+  },
+  goods : {
+    sources: [{i: "eureapa"},{i: "oecd"}],
+    en: 'The greenhouse gas emissions from buying consumption goods is calculated by combining data from the Eureapa website and the OECD household consumption database. Eureapa gives for each nation the carbon footprint of consumption goods, and its distribution in industrial sectors. In the assumption of Eureapa’s calculation, the carbon footprint is proportional to the household spending in each sector. Thus by combining the footprint of buying goods from a specific sector with the average spending of this sector from OECD-Stats, we can calculate the conversion factor : Euro → CO2e.',
+    fr: "Les émissions de gaz à effet de serre de l'achat de biens de consommation sont calculées en combinant les données du site web Eureapa et de la base de données de consommation des ménages de l'OCDE. Eureapa donne pour chaque nationalité l'empreinte carbone des biens de consommation, et sa distribution par secteurs industriels. Dans l'hypothèse de calcul d'Eureapa, l'empreinte carbone est proportionnelle aux dépenses des ménages dans chaque secteur. Ainsi, en combinant l'empreinte de l'achat de biens d'un secteur spécifique avec la dépense moyenne de ce secteur donnée par OCDE-Stats, on peut calculer le facteur de conversion: Euro → CO2e."
+  }
+}
+
+
+this.titre = titres[this.category][lang]
+
+this.words = function(){
+  for (var k in text) {
+    this[k] = text[k][lang] ? text[k][lang] : text[k].en;
+  }
+}
+this.words();
+
+</script>
+
+
+
+<style type="text/css">
+
+.questions{
+  padding-bottom: 4rem !important;
+}
+input[type="number"]{
+  position: relative;
+  width: calc(100% - 60px);
+  left: 32px;
+}
+input[type="number"]+label{
+  left: 35px !important;
+}
+.touchnumber{
+  width: 35px;
+    position: absolute;
+    top: 22%;
+    text-align: center;
+    border-radius: 50%;
+    /*background-color: lightgray;*/
+    height: 35px;
+}
+.touchnumber i{
+  margin: 5px;
+}
+.plus{
+  right: 0;
+}
+.minus{
+  left: 0%;
+}
+.chapitre h4{
+  /* margin-left: 15px; */
+  position: relative;
+  top: 9px;
+  text-transform: uppercase;
+}
+.side-number{
+  text-align: right;
+  position: relative;
+  right: 10px !important;
+}
+.side-number h4{
+  margin-bottom: 0;
+}
+.side-number .tonsofco2{
+  position: absolute;
+  bottom: -16px;
+  right: 12px;
+  font-size: 9pt;
+  width: 300px;
+}
+@media only screen and (max-width: 600px){
+.chapitre h4{
+  /* margin-left: 15px; */
+  position: relative;
+  top: 4px;
+  text-transform: uppercase;
+}}
+.description{
+  font-size: 1.1rem;
+  margin-top: 0;
+  text-align: justify;
+}
+.material-tooltip{
+  max-width: 300px !important;
+}
+input[type=range]{
+  -webkit-appearance:;
+}
+.thumb{
+  display: none;
+}
+.formulaire.row{
+  margin-bottom: 40px;
+}
+.formulaire .row{
+  margin-bottom: 0;
+}
+.formulaire input{
+  padding-bottom: 0;
+  /*margin: 0 0 9px 0;*/
+  text-align: right;
+  font-weight: bold;
+}
+input.select-dropdown{
+  text-align: left;
+  font-weight: 500;
+}
+.responsive-table{
+  overflow-x: auto;
+}
+#food-table{
+  min-width: 450px;
+}
+#food-table td{
+  text-align: center;
+  padding: 6px 0px;
+}
+.food-icon{
+  width: 55px;
+}
+.radio{
+  margin-bottom: 14px !important;
+    margin-top: 8px;
+}
+.radio .col:nth-child(2){
+  text-align: right;
+}
+.range-field label{
+  top: -10px;
+  color: inherit;
+  font-weight: bold;
+}
+
+#arh_country .sustainable-title{
+  display: none;
+}
+
+/*#arh_house .questions .card-panel{
+  background-color: #FBE9E7;
+}
+#arh_car .questions .card-panel{
+  background-color: #E3F2FD;
+}
+#arh_plane .questions .card-panel{
+  background-color: #E0F7FA;
+}
+#arh_food .questions .card-panel{
+  background-color: #FFF8E1;
+}
+#arh_goods .questions .card-panel{
+  background-color: #E8F5E9;
+}*/
+
+</style>
+
+</chapitre>

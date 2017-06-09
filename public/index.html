@@ -1,39 +1,194 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-    </style>
-  </head>
-  <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><!-- <button>Send</button> -->
-    </form>
-    <script src="https://cdn.socket.io/socket.io-1.1.0.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script>
-      var socket = io();
-      $('form').submit(function(){
-        socket.emit('chat message',
-          {
-            nick: 'chibre',
-            msg: $('#m').val()
-          });
-        $('#m').val('');
-        return false;
-      });
-      socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg.nick+' : '+msg.msg));
-      });
-    </script>
-  </body>
+
+<head>
+<title>Gumtree Ads on a Map</title>
+
+<link rel="icon" type="image/png" href="map.png">
+<link rel="image_src" type="image/png" href="facebook.jpg">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<link href="materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+<link href="style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<menu></menu>
+
+<script src="menu.html" type="riot/tag"></script>
+<script src="riot+compiler.min.js"></script>
+
+<script type="text/javascript">
+riot.mount('*');
+</script>
+
+<script src="jquery-2.1.1.min.js"></script>
+<script src="materialize.min.js"></script>
+
+<!-- <script src="centreville.js"></script> -->
+<script src="firebase-app.js"></script>
+<script src="firebase-database.js"></script>
+<!-- <script type="text/javascript" src="date.js"></script> -->
+
+
+<script>
+
+function log(e){ console.log(e) }
+
+var config = {
+	apiKey: "AIzaSyBBTr8Y6vt7VTLKRUdZ2QE6rdYH4Ls7lN0",
+	authDomain: "gumtree-hacker.firebaseapp.com",
+	databaseURL: "https://gumtree-hacker.firebaseio.com",
+	projectId: "gumtree-hacker",
+	storageBucket: "gumtree-hacker.appspot.com",
+	messagingSenderId: "846484105723"
+};
+
+// var config = {
+//     apiKey: "AIzaSyDD6JfW3qPYs2Z6KnbLeETj2hqTLjp0i1A",
+//     authDomain: "carbonimpact-7eac0.firebaseapp.com",
+//     databaseURL: "https://carbonimpact-7eac0.firebaseio.com",
+//     storageBucket: "carbonimpact-7eac0.appspot.com",
+//     messagingSenderId: "781862655051"
+// };
+firebase.initializeApp(config);
+
+var database = firebase.database();
+
+var flats = [];
+var krakow = {lat: 50.0646501, lng: 19.9449799};
+price = Infinity;
+
+
+function downloadFlats(){
+	
+	database.ref('flats').once('value').then(function(snapshot) {
+		log("flats arrived")
+		var fl = snapshot.val();
+		// console.log(fl)
+		for(var i in fl) {
+				flats.unshift(fl[i]);
+		}
+
+		drawFiltered();
+
+	});
+}
+
+database.ref("lastupdate").on('value', function(snapshot) {
+	downloadFlats();
+})
+
+var markers = [];
+
+function drawFiltered(){
+	var filtered = flats.filter(f=>{
+		return f.pricenumber <= price;
+	})
+	markers.forEach(m=>{m.setMap(null)})
+	markers = [];
+
+	var bezlocation = [];
+	var bezText = "";
+
+	filtered.forEach(f => {
+		// log(f)
+
+		var position,
+				icon;
+
+		var streets = Object.keys(f.streets || {});
+		
+		// console.log(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng))
+		if(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng) > 0.0000002){
+			position = {lat: parseFloat(f.lat), lng: parseFloat(f.lng)} ;
+			icon = redIcon;
+		} else if(streets.length) {
+			position = f.streets[streets.pop()];
+			icon = orangeIcon;
+		} else {
+			bezlocation.push(f)
+			bezText = bezText + textwind(f);
+			return true;
+		}
+
+		var marker = new google.maps.Marker({
+			position: position,
+			map: map,
+			title: f.title,
+			icon: icon
+		});
+		markers.push(marker)
+
+		var infowindow = new google.maps.InfoWindow({
+			content: textwind(f)
+		});
+
+		marker.addListener('click', function() {
+			infowindow.open(map, marker);
+		});
+
+	})
+
+
+	var marker = new google.maps.Marker({
+		position: krakow,
+		map: map,
+		title: "The others",
+		icon: blueIcon
+	});
+	markers.push(marker)
+
+	var infowindow = new google.maps.InfoWindow({
+		content: bezText
+	});
+
+	marker.addListener('click', function() {
+		infowindow.open(map, marker);
+	});
+
+}
+
+
+
+
+
+var map;
+function initMap() {
+	log("initMap")
+	map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 14,
+		center: krakow
+	});
+
+
+// 50.062088,19.966669499999966
+}
+
+function textwind(f){
+	return "<b>" + f.title + "</b><br>" + f.price + '<br><a href="'+ f.href +'" target="_blank">Link</a><br>'
+}
+
+var orangeIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
+var redIcon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+var blueIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+
+
+$.get( "", function( data ) {
+
+  console.log( "Update requested" , data);
+});
+
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>
+
+</body>
 </html>

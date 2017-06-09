@@ -27,34 +27,22 @@ app.listen(app.get('port'), function() {
 })
 */
 
-var express = require('express')
-	, app = express()
-	// , fs = require('fs')
+// var express = require('express')
+// 	, app = express()
+// 	// , fs = require('fs')
 	// , eyes = require('eyes')
-	, multer  = require('multer')
-	, pg = require('pg')
-	, sql = require('sql')
-	, bodyParser = require('body-parser')
-	, ejs = require('ejs')
+	// , multer  = require('multer')
+	// , pg = require('pg')
+	// , sql = require('sql')
+	// , bodyParser = require('body-parser')
+	// , ejs = require('ejs')
 	// , $ = require('jquery')(require("jsdom").jsdom().parentWindow);
 	// , google = require('googleapis'
 	// , OAuth2 = google.auth.OAuth2;
-;
-var DATABASE_URL = 'postgres://rxczkdjyebmxfl:b8uvjvix4Z2yflVth3n1a4tOjv@ec2-54-246-81-118.eu-west-1.compute.amazonaws.com:5432/devrau91ujvtbo'
-	+ '?ssl=true';
+// ;
 
-var currentArticle,
-	currentArticleId;
 
-var allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', "*");
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  //res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-}
 
-app.use( allowCrossDomain );
 
 
 var firebase = require("firebase-admin");
@@ -95,17 +83,17 @@ var log = console.log;
 var rootUrl = "https://www.gumtree.pl";
 
 var queryUrls = [
-	'https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/v1c9000l3200208p1?pr=,1300&fr=ownr',
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-2/v1c9000l3200208p2?pr=,1300&fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9000l3200208p2?pr=,1300&fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-4/v1c9000l3200208p2?pr=,1300&fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-5/v1c9000l3200208p2?pr=,1300&fr=ownr",
+	'https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/v1c9000l3200208p1?fr=ownr',
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-2/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-4/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-5/v1c9000l3200208p2?fr=ownr",
 
-	'https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/v1c9008l3200208p1?fr=ownr&pr=,1300',
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-2/v1c9008l3200208p1?pr=,1300&fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9008l3200208p1?pr=,1300&fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-4/v1c9008l3200208p1?pr=,1300&fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-5/v1c9008l3200208p1?pr=,1300&fr=ownr"
+	'https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/v1c9008l3200208p1?fr=ownr',
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-2/v1c9008l3200208p1?fr=ownr",
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-3/v1c9008l3200208p1?fr=ownr",
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-4/v1c9008l3200208p1?fr=ownr",
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-5/v1c9008l3200208p1?fr=ownr"
 ]
 
 
@@ -126,7 +114,7 @@ request(urlz, function (error, response, body) {
 })
 }
 
-var maison = 'https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/2+pokojowe-54-m2-olsza-do-wynajecia/1001999439920911108367709';
+// var maison = 'https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/2+pokojowe-54-m2-olsza-do-wynajecia/1001999439920911108367709';
 var krakow = [50.0646501,19.9449799];
 
 function getFlat(url){
@@ -149,6 +137,9 @@ function getFlat(url){
 		})
 		props.title = $('.myAdTitle').text()
 		props.price = removeUnnecessary($('.vip-title').find('.price').find('.value').text())
+		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
+		// console.log(props.pricenumber)
+		// if(props.pricenumber == NaN) return false;
 		props.description = $('.description').find('.pre').text()
 		props.streets = {};
 
@@ -179,8 +170,8 @@ function getFlat(url){
 				firebase.database()
 				.ref('/streets/' + streetKey(s) ).once('value')
 				.then(function(snapshot) {
-
-				 	if(!snapshot.val()){
+					var snap = snapshot.val();
+				 	if(!snap){
 				 		log(s)
 				 		request(queryMapsUrl(s),function (error, response, body) {
 				 			if(!body) return true;
@@ -194,8 +185,12 @@ function getFlat(url){
 								database.ref('streets/'+streetKey(s)).update(obj)
 
 								database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
+							} else {
+								database.ref('streets/'+streetKey(s)).update({google: "notfound"})
 							}
 						})
+				 	} else if(snap.google == "notfound") {
+				 		return true;
 				 	} else {
 				 		obj = Object.assign(obj,snapshot.val());
 				 		database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
@@ -217,6 +212,18 @@ function getFlat(url){
 	})
 }
 
+function update(){
+	queryUrls.forEach(l=>{
+		getList(l)
+	})
+	var obj = {
+		timestamp: Date.now(),
+		date: new Date() + ""
+	}
+	log(obj)
+	database.ref('lastupdate').set(obj)
+}
+
 function removeUnnecessary(t){
 	return t.replace(/\t/g,'').replace(/\n/g,'').replace(/ +/g,' ');
 }
@@ -226,12 +233,43 @@ function queryMapsUrl(ul){
 function streetKey(s){
 	return s.replace(/\.|#|$|\/|\[|\]/g,"")
 }
-// getFlat(maison)
-queryUrls.forEach(l=>{
-	getList(l)
+
+
+var express = require('express');
+var app = express();
+
+
+var allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  //res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+}
+
+app.use( allowCrossDomain );
+
+// respond with "hello world" when a GET request is made to the homepage
+app.get('/update', function(req, res) {
+
+  	firebase.database()
+	.ref('/lastupdate/').once('value')
+	.then(function(snapshot) {
+		var lastupdate = snapshot.val().timestamp;
+		console.log(Date.now(),lastupdate,Date.now()-lastupdate)
+		if(Date.now() - lastupdate > 3600000){
+			res.send('Update started');
+			update();
+		} else {
+			res.send('Update less than an hour ago');
+		}
+	})
+ 
+});
+
+app.listen(5000, function () {
+  console.log('Example app listening on port 5000!')
 })
-
-
 
 
 

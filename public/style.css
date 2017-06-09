@@ -1,0 +1,19 @@
+#map {
+  height: 100%;
+  width: 100%;
+}
+body{
+  height: 100%;
+  margin: 0;
+}
+html{
+  height: 100%;
+}
+#menu{
+	position: absolute;
+	width: 300px;
+	max-height: 96%;
+	top: 0;
+	left: 0.5rem;
+	z-index: 0;
+}
