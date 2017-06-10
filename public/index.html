@@ -66,6 +66,7 @@ var database = firebase.database();
 var flats = [];
 var krakow = {lat: 50.0646501, lng: 19.9449799};
 price = Infinity;
+today = false;
 
 
 function downloadFlats(){
@@ -75,6 +76,9 @@ function downloadFlats(){
 		var fl = snapshot.val();
 		// console.log(fl)
 		for(var i in fl) {
+				var j = fl[i]["Data dodania"].split("/")
+				var d = new Date();
+				fl[i].today = parseInt(j[0]) == d.getDate() && parseInt(j[1]) == d.getMonth()+1;
 				flats.unshift(fl[i]);
 		}
 
@@ -91,7 +95,8 @@ var markers = [];
 
 function drawFiltered(){
 	var filtered = flats.filter(f=>{
-		return f.pricenumber <= price;
+		var auj = today ? f.today : true;
+		return f.pricenumber <= price && auj
 	})
 	markers.forEach(m=>{m.setMap(null)})
 	markers = [];
@@ -174,7 +179,7 @@ function initMap() {
 }
 
 function textwind(f){
-	return "<b>" + f.title + "</b><br>" + f.price + '<br><a href="'+ f.href +'" target="_blank">Link</a><br>'
+	return f["Data dodania"] + "<br><b>" + f.title + "</b><br>" + f.price + '<br><a href="'+ f.href +'" target="_blank">Link</a><br>'
 }
 
 var orangeIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
@@ -182,10 +187,25 @@ var redIcon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
 var blueIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
 
-$.get( "", function( data ) {
-
-  console.log( "Update requested" , data);
+$.get( "https://thawing-citadel-9733.herokuapp.com/update", function( data ) {
+  console.log(data);
 });
+
+var user;
+if(location.hostname == "localhost") {
+    localStorage.user = "Gaspard";
+} else {
+    localStorage.user = Date.now();
+}
+
+// tracking users once
+if(localStorage.user != "Gaspard"){
+    var obj = {}
+    var d = new Date();
+    var text = "0"+(d.getMonth()+1)+"-"+d.getDate()+" "+(d.getHours()<10?"0"+d.getHours():d.getHours() )+":"+(d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes() )+":"+(d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
+    obj[text] = localStorage.user;
+    database.ref("pings").update(obj)
+}
 
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>

@@ -16,4 +16,12 @@ html{
 	top: 0;
 	left: 0.5rem;
 	z-index: 0;
+	overflow: scroll;
+}
+
+.title{
+	text-transform: uppercase;
+}
+label[for=today]{
+	color: rgba(0,0,0,0.87);
 }

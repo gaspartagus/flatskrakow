@@ -88,12 +88,20 @@ var queryUrls = [
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-4/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-5/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-6/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-7/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-8/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-9/v1c9000l3200208p2?fr=ownr",
 
 	'https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/v1c9008l3200208p1?fr=ownr',
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-2/v1c9008l3200208p1?fr=ownr",
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-3/v1c9008l3200208p1?fr=ownr",
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-4/v1c9008l3200208p1?fr=ownr",
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-5/v1c9008l3200208p1?fr=ownr"
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-6/v1c9008l3200208p1?fr=ownr",
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-7/v1c9008l3200208p1?fr=ownr",
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-8/v1c9008l3200208p1?fr=ownr",
+	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-9/v1c9008l3200208p1?fr=ownr"
 ]
 
 
@@ -212,6 +220,21 @@ function getFlat(url){
 	})
 }
 
+function removeOld(){
+	database
+	.ref('flats').once('value')
+	.then(function(snapshot) {
+		var flats = snapshot.val();
+		for(var id in flats){
+			request(flats[id].href, function (err, red, body) {
+				if(!body){
+					console.log("F'well")
+				}
+			})
+		}
+	})
+}
+
 function update(){
 	queryUrls.forEach(l=>{
 		getList(l)
@@ -257,20 +280,28 @@ app.get('/update', function(req, res) {
   	firebase.database()
 	.ref('/lastupdate/').once('value')
 	.then(function(snapshot) {
+
 		var lastupdate = snapshot.val().timestamp;
 		console.log(Date.now(),lastupdate,Date.now()-lastupdate)
+
 		if(Date.now() - lastupdate > 3600000){
 			res.send('Update started');
 			update();
 		} else {
-			res.send('Update less than an hour ago');
+			res.send('Updated less than an hour ago');
 		}
 	})
  
 });
 
+app.get('/remove', function(req, res) {
+	res.send('Okay, started removing old stuff');
+  	removeOld();
+ 
+});
+
 app.listen(app.get('port'), function () {
-  console.log('Example app listening on port 5000!')
+  console.log('Example app listening on port '+app.get('port'))
 })
 
 
