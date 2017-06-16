@@ -167,7 +167,7 @@ function getFlat(url){
 
 			var short = s.split(" ").pop();
 			if( short == undefined ) short = s;
-			if(short <= 4) return true;
+			if(short.length <= 4) return true;
 
 			var index = props.title.search(short);
 			var found = "title"
@@ -218,7 +218,7 @@ function getFlat(url){
 
 
 		//
-
+		props.description = ""
 		database.ref("flats/"+id).update(props)
 
 	})

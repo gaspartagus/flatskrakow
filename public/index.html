@@ -235,15 +235,19 @@ function addMarkers(){
 			rues = rues.sort((a,b) => {
 				if(a.found == "title" && b.found == "description") return 1;
 				if(a.found == "description" && b.found == "title") return -1;
-				if(a.found == "title" && b.found == "title") return 0;
+				if(a.found == "title" && b.found == "title") {
+					if(a.index > b.index) return -1;
+					if(a.index < b.index) return 1;
+					if(a.index == b.index) return 0;
+				}
 				if(a.found == "description" && b.found == "description") {
-					if(a.index > b.index) return 1;
-					if(a.index < b.index) return -1;
+					if(a.index > b.index) return -1;
+					if(a.index < b.index) return 1;
 					if(a.index == b.index) return 0;
 				}
 				return 0;
 			})
-			// console.log(rues)
+			console.log(rues)
 			var str = rues.pop();
 			// console.log(str)
 			if(Math.abs(str.lat-krakow.lat)+Math.abs(str.lng-krakow.lng) > 0.0000002){
