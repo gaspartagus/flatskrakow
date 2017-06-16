@@ -1,42 +1,149 @@
+<raw>
+  <span></span>
+  this.root.innerHTML = opts.content
+</raw>
+
 <menu>
 
 
 
 <div id="menu" class="card-panel">
-  <h5>Gumtree Ads Kraków</h5>
-  <p>A map of the gumtree adverts for <b>rooms, appartments</b> and <b>houses</b> to rent <b>directly by owners</b> in Krakow</p>
-  <p class="title">Color legend</p>
-  <ul>
-    <li><img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png">Position given by the owner</li>
-    <li><img src="http://maps.google.com/mapfiles/ms/icons/orange-dot.png">Position guessed from the street name in the title or the description of the advert</li>
-    <li><img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png">All other un-located adverts</li>
-  </ul>
-
-  <p class="title">Settings</p>
-  <div class="row">
-    <div class="input-field col s8 push-s2">
-      <input ref="price" id="price" type="number" onchange={ edit } step="50">
-      <label for="price">Maximum Price (zł)</label>
+  <div id="entete" class="background"></div>
+	<div class="langues clearfix">
+    <div class="clearfix">
+  		<img src="en.png" id="en" ref="en" onclick={ langue } class="{ lang == 'en' ? 'selected' : '' }">
+  		<img src="pl.png" id="pl" ref="pl" onclick={ langue } class="{ lang == 'pl' ? 'selected' : '' }">
+  		<img src="fr.png" id="fr" ref="fr" onclick={ langue } class="{ lang == 'fr' ? 'selected' : '' }">
     </div>
-    <div class="input-field col s12">
-      <input ref="today" id="today" type="checkbox" onchange={ filterToday }>
-      <label for="today">Show only the ads posted today</label>
+	</div>
+  <h5 class="titre"><raw content={ text1 }/></h5>
+  <p class="subtitle">{ text10 }</p>
+  <p><raw content={ text2 }/></p>
+
+  <p class="title">{ text7 }</p>
+  <div class="settings white-text">
+    <div id="parametres" class="background"></div>
+    <div class="row">
+      <div id="pricerow" class="input-field col s8 push-s2">
+        <input ref="price" id="price" type="number" onchange={ edit } step="50">
+        <label for="price">{ text8 }</label>
+      </div>
+      <div id="todayrow" class="input-field col s12">
+        <input ref="today" id="today" type="checkbox" onchange={ filterToday }>
+        <label for="today">{ text9 }</label>
+      </div>
     </div>
   </div>
+  
+  <div id="legende">
+    <p class="title">{ text3 }</p>
+    <ul>
+      <li><img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png">{ text4 }</li>
+      <li><img src="http://maps.google.com/mapfiles/ms/icons/orange-dot.png">{ text5 }</li>
+      <li><img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png">{ text6 }</li>
+    </ul>
+  </div>
+
+
 </div>
 
 <script>
 
+
 edit(e){
 	window.price = this.refs.price.value;
 	console.log(price)
-	drawFiltered();
+	addRemove();
 }
 
 filterToday(e){
 	window.today = e.target.checked;
-	drawFiltered();
+  console.log(e.target.checked)
+	addRemove();
 }
+
+langue(e){
+	// console.log(e,e.target.attributes.ref.nodeValue)
+	lang = e.target.attributes.ref.nodeValue;
+  this.ln = lang;
+	this.words()
+  localStorage.lang = lang;
+  addDialogs();
+	// this.update()
+	// lang
+}
+this.ln = lang;
+var text = {
+  text1 : {
+    en : "Rooms and Flats in Krakow",
+    pl : "Pokoje i mieszkania w Krakowie",
+    fr : "Chambres et Appartements à Cracovie",
+  },
+  text10 : {
+    en : "Gumtree offers",
+    pl : "Oferty z Gumtree",
+    fr : "Offres de Gumtree.pl",
+  },
+  text2 : {
+    en : "A map of the gumtree adverts for rooms, appartments and houses to rent <b>directly by owners</b> in Krakow",
+    pl : "Mapa ogłoszeń Gumtree o wynajmie pokojów, mieszkań i domów; ogłoszenia <b>od właściciela</b>.",
+    fr : "Une carte des annonces Gumtree.pl (propriétaires uniquement) des chambres et appartements à louer à Cracovie",
+  },
+  text3 : {
+    en : "Color legend",
+    pl : "Legenda",
+    fr : "Légende",
+  },
+  text4 : {
+    en : "Position given by the owner",
+    pl : "Pozycja podana przez właściciela",
+    fr : "Adresse donnée par le propriétaire",
+  },
+  text5 : {
+    en : "Position guessed from the street name in the title or the description of the advert",
+    pl : "Pozycja ustalona na podstawie nazwy ulicy w tytule lub treści ogłoszenia",
+    fr : "Position devinée avec les noms de rues dans le titre ou le texte de l'annonce",
+  },
+  text6 : {
+    en : "All other un-located adverts",
+    pl : "Pozostałe, niezlokalizowane ogłoszenia",
+    fr : "Toutes les autres annonces non localisées",
+  },
+  text7 : {
+    en : "Settings",
+    pl : "Ustawienia",
+    fr : "Paramètres",
+  },
+  text8 : {
+    en : "Maximum price (zł)",
+    pl : "Cena maksymalna",
+    fr : "Prix maximum",
+  },
+  text9 : {
+    en : "Show only the ads posted today",
+    pl : "Tylko ogłoszenia dodane dzisiaj",
+    fr : "Ne montrer que les annonces postées aujourd'hui",
+  },
+  text : {
+    en : "",
+    pl : "",
+    fr : "",
+  }
+}
+
+
+this.words = function(){
+  for (var k in text) {
+    this[k] = text[k][lang] ? text[k][lang] : text[k].en;
+  }
+}
+
+this.words();
+
+this.on("update",e=>{
+	console.log("updating")
+  riot.mount('raw')
+})
 
 
 

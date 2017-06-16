@@ -15,18 +15,30 @@
 <link href="materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
 <link href="style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+<link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
 </head>
 
 <body>
 
-<div id="map"></div>
-
 <menu></menu>
+
+<div id="map"></div>
 
 <script src="menu.html" type="riot/tag"></script>
 <script src="riot+compiler.min.js"></script>
 
 <script type="text/javascript">
+lang = "en";
+
+if(localStorage.lang) lang = localStorage.lang;
+else if (["fr","fr-fr","fr-FR", "fr-BE", "fr-CA", "fr-CH", "fr-LU"].indexOf(navigator.language) > -1){
+	lang = "fr";
+} else if (["pl","pl-PL"].indexOf(navigator.language) > -1){
+	lang = "pl";
+}
+localStorage.lang = lang;
+
 riot.mount('*');
 </script>
 
@@ -38,8 +50,10 @@ riot.mount('*');
 <script src="firebase-database.js"></script>
 <!-- <script type="text/javascript" src="date.js"></script> -->
 
-
 <script>
+
+if(lang == "fr") $("title").text("Cartes des annonces Gumtree");
+if(lang == "pl") $("title").text("Mapa ogłoszeń Gumtree");
 
 function log(e){ console.log(e) }
 
@@ -73,113 +87,218 @@ function downloadFlats(){
 	
 	database.ref('flats').once('value').then(function(snapshot) {
 		log("flats arrived")
-		var fl = snapshot.val();
-		// console.log(fl)
-		for(var i in fl) {
-				var j = fl[i]["Data dodania"].split("/")
-				var d = new Date();
-				fl[i].today = parseInt(j[0]) == d.getDate() && parseInt(j[1]) == d.getMonth()+1;
-				flats.unshift(fl[i]);
+		
+		saveFlats(snapshot)
+
+		if(map){
+			addMarkers();
+			addDialogs();
 		}
-
-		drawFiltered();
-
 	});
+}
+downloadFlats();
+
+
+function saveFlats(snapshot){
+	flats.forEach(f => {
+		if(f.marker){
+			f.marker.setMap(null);
+		}
+	})
+	flats = [];
+	var fl = snapshot.val();
+	// console.log(fl)
+	for(var i in fl) {
+			// console.log(fl[i])
+			var j = fl[i]["Data dodania"].split("/")
+			var d = new Date();
+			fl[i].today = parseInt(j[0]) == d.getDate() && parseInt(j[1]) == d.getMonth()+1;
+			flats.unshift(fl[i]);
+	}
 }
 
 database.ref("lastupdate").on('value', function(snapshot) {
-	downloadFlats();
+
+	// saveFlats(snapshot);
 })
 
-var markers = [];
+var map,
+	blueMarker,
+	blueInfoWindow;
 
-function drawFiltered(){
-	var filtered = flats.filter(f=>{
-		var auj = today ? f.today : true;
-		return f.pricenumber <= price && auj
-	})
-	markers.forEach(m=>{m.setMap(null)})
-	markers = [];
-
-	var bezlocation = [];
-	var bezText = "";
-
-	filtered.forEach(f => {
-		// log(f)
-
-		var position,
-				icon;
-
-		var streets = Object.keys(f.streets || {});
-		
-		// console.log(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng))
-		if(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng) > 0.0000002){
-			position = {lat: parseFloat(f.lat), lng: parseFloat(f.lng)} ;
-			icon = redIcon;
-		} else if(streets.length) {
-			position = f.streets[streets.pop()];
-			icon = orangeIcon;
-		} else {
-			bezlocation.push(f)
-			bezText = bezText + textwind(f);
-			return true;
-		}
-
-		var marker = new google.maps.Marker({
-			position: position,
-			map: map,
-			title: f.title,
-			icon: icon
-		});
-		markers.push(marker)
-
-		var infowindow = new google.maps.InfoWindow({
-			content: textwind(f)
-		});
-
-		marker.addListener('click', function() {
-			infowindow.open(map, marker);
-		});
-
-	})
-
-
-	var marker = new google.maps.Marker({
-		position: krakow,
-		map: map,
-		title: "The others",
-		icon: blueIcon
-	});
-	markers.push(marker)
-
-	var infowindow = new google.maps.InfoWindow({
-		content: bezText
-	});
-
-	marker.addListener('click', function() {
-		infowindow.open(map, marker);
-	});
-
-}
-
-
-
-
-
-var map;
 function initMap() {
+
 	log("initMap")
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 14,
 		center: krakow
 	});
+	blueMarker = new google.maps.Marker({
+		position: krakow,
+		map: map,
+		title: "The others",
+		icon: blueIcon
+	});
+	if(flats.length){
+		addMarkers();
+		addDialogs();
+	}
+}
+var openDialog;
+
+function addDialogs(){
+	var bezText = "";
+
+	flats.forEach(f => {
+
+		if( isFiltered(f)){
+			if(f.marker){
+				if(f.infowindow){
+					f.infowindow.setContent( textwind(f) )
+				} else {
+					f.infowindow = new google.maps.InfoWindow({
+						content: textwind(f)
+					});					
+					f.marker.addListener('click', function() {
+						// log("Just clicked a dot")
+						if(openDialog == f.infowindow){
+							f.infowindow.close();
+							openDialog = "";
+							return true;
+						}
+						f.infowindow.open(map, f.marker);
+						if(openDialog){
+							openDialog.close();
+						}
+						openDialog = f.infowindow;
+						// log("Just opened the window")
+						saveClick(f);
+					});
+
+					f.infowindow.addListener('closeclick', function(){
+						openDialog = "";
+					})
+				}
+	
+			} else {
+				bezText = bezText + textwind(f);
+			}
+		}
+	})
+
+	if(blueInfoWindow){
+		blueInfoWindow.setContent(bezText)
+
+	} else {
+
+		blueInfoWindow = new google.maps.InfoWindow({
+			content: bezText
+		});
+		// console.log(infowindow)
+
+		blueMarker.addListener('click', function listener(){
+			blueInfoWindow.open(map, blueMarker);
+
+			if(openDialog == blueInfoWindow){
+				blueInfoWindow.close();
+				openDialog = "";
+				return true;
+			}
+			if(openDialog){
+				openDialog.close();
+			}
+			openDialog = blueInfoWindow;
+		});
+
+		blueInfoWindow.addListener('closeclick', function(){
+			openDialog = "";
+		})
+	}
+	// blueMarker.addListener('click', listener);
+}
 
 
-// 50.062088,19.966669499999966
+
+function addMarkers(){
+	flats.forEach(f => {
+		var streets = Object.keys(f.streets || {});
+			
+		// console.log(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng))
+		// if the lat lng is far enough from the center
+		if(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng) > 0.0000002){
+			f.position = {lat: parseFloat(f.lat), lng: parseFloat(f.lng)} ;
+			f.icon = redIcon;
+		} else if(streets.length) {
+
+			var rues = [];
+			streets.forEach(e => { rues.push(f.streets[e]) })
+			rues = rues.sort((a,b) => {
+				if(a.found == "title" && b.found == "description") return 1;
+				if(a.found == "description" && b.found == "title") return -1;
+				if(a.found == "title" && b.found == "title") return 0;
+				if(a.found == "description" && b.found == "description") {
+					if(a.index > b.index) return 1;
+					if(a.index < b.index) return -1;
+					if(a.index == b.index) return 0;
+				}
+				return 0;
+			})
+			// console.log(rues)
+			var str = rues.pop();
+			// console.log(str)
+			if(Math.abs(str.lat-krakow.lat)+Math.abs(str.lng-krakow.lng) > 0.0000002){
+				f.position = str;
+				f.icon = orangeIcon;
+			} else {
+				return true;
+			}
+		} else {
+			// bezlocation.push(f)
+			// bezText = bezText + textwind(f);
+			return true;
+		}
+
+		f.marker = new google.maps.Marker({
+			position: f.position,
+			map: isFiltered(f) ? map : null,
+			title: f.title,
+			icon: f.icon
+		});
+	})
+}
+
+function addRemove(){
+	flats.forEach(f => {
+
+		if(f.marker){
+			if(isFiltered(f)){
+				f.marker.setMap(map)
+			} else {
+				f.marker.setMap(null)
+			}
+		}
+	})
+	addDialogs();
+}
+
+function isFiltered(f){
+	var auj = today ? f.today : true;
+	return f.pricenumber <= price && auj
+}
+
+
+function saveClick(f){
+	// log('users/'+user+'/clicks/'+f.id)
+	database.ref('users/'+user+'/clicks/'+f.id).update({date: new Date()});
 }
 
 function textwind(f){
-	return f["Data dodania"] + "<br><b>" + f.title + "</b><br>" + f.price + '<br><a href="'+ f.href +'" target="_blank">Link</a><br>'
+	return f["Data dodania"] + "<br><b>" + f.title + "</b><br>" + f.price + '<br><a href="'+ f.href +'" target="_blank">'+ lien[lang] +'</a><br>'
+}
+var lien = {
+	en: "See on Gumtree",
+	fr: "Voir sur Gumtree",
+	pl: "Zobacz na Gumtree"
 }
 
 var orangeIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
@@ -194,8 +313,10 @@ $.get( "https://thawing-citadel-9733.herokuapp.com/update", function( data ) {
 var user;
 if(location.hostname == "localhost") {
     localStorage.user = "Gaspard";
+    user = localStorage.user;
 } else {
     localStorage.user = Date.now();
+    user = localStorage.user;
 }
 
 // tracking users once
@@ -203,12 +324,12 @@ if(localStorage.user != "Gaspard"){
     var obj = {}
     var d = new Date();
     var text = "0"+(d.getMonth()+1)+"-"+d.getDate()+" "+(d.getHours()<10?"0"+d.getHours():d.getHours() )+":"+(d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes() )+":"+(d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
-    obj[text] = localStorage.user;
+    obj[text] = localStorage.user + " " + lang + " from "+navigator.language;
     database.ref("pings").update(obj)
 }
 
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>
 
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>
 </body>
 </html>

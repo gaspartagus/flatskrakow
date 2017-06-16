@@ -170,10 +170,14 @@ function getFlat(url){
 			if(short <= 4) return true;
 
 			var index = props.title.search(short);
-			if(index < 0) index = props.description.search(short);
+			var found = "title"
+			if(index < 0) {
+				index = props.description.search(short);
+				found = "description";
+			}
 
 			if (index > -1 ){
-				var obj = { index : index };
+				var obj = { index : index, found : found };
 
 				firebase.database()
 				.ref('/streets/' + streetKey(s) ).once('value')
@@ -303,6 +307,12 @@ app.get('/remove', function(req, res) {
 app.listen(app.get('port'), function () {
   console.log('Example app listening on port '+app.get('port'))
 })
+
+
+
+
+
+
 
 
 
