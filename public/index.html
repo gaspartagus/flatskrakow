@@ -85,7 +85,7 @@ today = false;
 
 function downloadFlats(){
 	
-	database.ref('flats').once('value').then(function(snapshot) {
+	database.ref('smalls').once('value').then(function(snapshot) {
 		log("flats arrived")
 		
 		saveFlats(snapshot)
@@ -247,7 +247,7 @@ function addMarkers(){
 				}
 				return 0;
 			})
-			console.log(rues)
+			// console.log(rues)
 			var str = rues.pop();
 			// console.log(str)
 			if(Math.abs(str.lat-krakow.lat)+Math.abs(str.lng-krakow.lng) > 0.0000002){

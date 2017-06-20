@@ -108,18 +108,18 @@ var queryUrls = [
 
 
 function getList(urlz){ 
-request(urlz, function (error, response, body) {
-		// console.log('error:', error); // Print the error if one occurred 
-		// console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
-		// console.log('body:', body); // Print the HTML for the Google homepage. 
+	request(urlz, function (error, response, body) {
+			// console.log('error:', error); // Print the error if one occurred 
+			// console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
+			// console.log('body:', body); // Print the HTML for the Google homepage. 
 
-	const $ = cheerio.load(body)
+		const $ = cheerio.load(body)
 
-	$('.href-link').each((i,e) =>{
-		// log(rootUrl+e.attribs.href)
- 		getFlat(rootUrl+e.attribs.href)
+		$('.href-link').each((i,e) =>{
+			// log(rootUrl+e.attribs.href)
+	 		getFlat(rootUrl+e.attribs.href)
+		})
 	})
-})
 }
 
 // var maison = 'https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/2+pokojowe-54-m2-olsza-do-wynajecia/1001999439920911108367709';
@@ -195,8 +195,9 @@ function getFlat(url){
 								// obj[ streetKey(s) ] = body.results[0].geometry.location;
 								obj = Object.assign(obj,body.results[0].geometry.location)
 								database.ref('streets/'+streetKey(s)).update(obj)
-
+								
 								database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
+								database.ref("smalls/"+id+'/streets/'+streetKey(s)).update(obj)
 							} else {
 								database.ref('streets/'+streetKey(s)).update({google: "notfound"})
 							}
@@ -206,6 +207,7 @@ function getFlat(url){
 				 	} else {
 				 		obj = Object.assign(obj,snapshot.val());
 				 		database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
+				 		database.ref("smalls/"+id+'/streets/'+streetKey(s)).update(obj)
 				 	}
 				});
 
@@ -220,21 +222,31 @@ function getFlat(url){
 		//
 		props.description = ""
 		database.ref("flats/"+id).update(props)
+		var small = {
+			lat: props.lat || null,
+			lng: props.lng || null,
+			id: props.id || null,
+			price: props.price || null,
+			title: props.title || null,
+			streets: props.streets || null,
+			"Data dodania": props["Data dodania"] || null,
+			refreshed: Date.now()
+		};
+		database.ref("smalls/"+id).update(small)
 
 	})
 }
 
 function removeOld(){
 	database
-	.ref('flats').once('value')
+	.ref('smalls').once('value')
 	.then(function(snapshot) {
 		var flats = snapshot.val();
 		for(var id in flats){
-			request(flats[id].href, function (err, red, body) {
-				if(!body){
-					console.log("F'well")
-				}
-			})
+			if(Date.now() - flats[id].refreshed > 1000*3600*24*3){
+				log('removed '+id)
+				database.ref('smalls').child(id).remove();
+			}
 		}
 	})
 }
@@ -247,7 +259,8 @@ function update(){
 		timestamp: Date.now(),
 		date: new Date() + ""
 	}
-	log(obj)
+	log("Update started on "+obj.date)
+	removeOld();
 	database.ref('lastupdate').set(obj)
 }
 
