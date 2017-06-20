@@ -25,12 +25,24 @@
     <div id="parametres" class="background"></div>
     <div class="row">
       <div id="pricerow" class="input-field col s8 push-s2">
-        <input ref="price" id="price" type="number" onchange={ edit } step="50">
-        <label for="price">{ text8 }</label>
+        <input ref="price" id="price" type="number" onchange={ edit } step="50" value="{ price }">
+        <label for="price" ref="pricelabel">{ text8 }</label>
       </div>
       <div id="todayrow" class="input-field col s12">
-        <input ref="today" id="today" type="checkbox" onchange={ filterToday }>
+        <input ref="today" id="today" type="checkbox" checked onchange={ filterToday }>
         <label for="today">{ text9 }</label>
+      </div>
+      <div class="input-field col s12 websitesrow">
+        <input ref="gumtree" id="gumtree" type="checkbox" checked onchange={ filterWebsites }>
+        <label for="gumtree">Gumtree.pl</label>
+      </div>
+      <div class="input-field col s12 websitesrow">
+        <input ref="otodom" id="otodom" type="checkbox" checked onchange={ filterWebsites }>
+        <label for="otodom">Otodom.pl</label>
+      </div>
+      <div class="input-field col s12 websitesrow">
+        <input ref="gratka" id="gratka" type="checkbox" checked onchange={ filterWebsites }>
+        <label for="gratka">Gratka.pl</label>
       </div>
     </div>
   </div>
@@ -38,9 +50,9 @@
   <div id="legende">
     <p class="title">{ text3 }</p>
     <ul>
-      <li><img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png">{ text4 }</li>
-      <li><img src="http://maps.google.com/mapfiles/ms/icons/orange-dot.png">{ text5 }</li>
-      <li><img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png">{ text6 }</li>
+      <li><img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png">{ text4 }</li>
+      <li><img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png">{ text5 }</li>
+      <li><img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png">{ text6 }</li>
     </ul>
   </div>
 
@@ -51,15 +63,24 @@
 
 
 edit(e){
-	window.price = this.refs.price.value;
-	console.log(price)
+	window.price = this.refs.price.value || Infinity;
+  localStorage.price = window.price;
+	console.log(this.refs.price.value)
 	addRemove();
 }
 
 filterToday(e){
 	window.today = e.target.checked;
+  localStorage.today = e.target.checked;
   console.log(e.target.checked)
 	addRemove();
+}
+filterWebsites(e){
+  window.websites[e.target.id] = e.target.checked;
+  localStorage[e.target.id] = e.target.checked;
+  console.log(window.websites)
+  addRemove();
+
 }
 
 langue(e){
@@ -73,6 +94,32 @@ langue(e){
 	// lang
 }
 this.ln = lang;
+this.price = parseInt(localStorage.price || "");
+this.today = JSON.parse(localStorage.today || false);
+this.gumtree = JSON.parse(localStorage.gumtree || true);
+this.gratka = JSON.parse(localStorage.gratka || false);
+this.otodom = JSON.parse(localStorage.otodom || false);
+
+window.websites = {
+  gumtree : this.gumtree,
+  otodom: this.otodom,
+  gratka: this.gratka
+};
+
+
+this.on('mount', function(){
+  if(!this.gumtree)
+  this.refs.gumtree.removeAttribute("checked")
+  if(!this.gratka)
+  this.refs.gratka.removeAttribute("checked")
+  if(!this.otodom)
+  this.refs.otodom.removeAttribute("checked")
+  if(!this.today)
+  this.refs.today.removeAttribute("checked")
+  if(this.price)
+  this.refs.pricelabel.className += " active";
+})
+
 var text = {
   text1 : {
     en : "Rooms and Flats in Krakow",

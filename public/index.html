@@ -261,13 +261,13 @@ function addMarkers(){
 			// bezText = bezText + textwind(f);
 			return true;
 		}
-
 		f.marker = new google.maps.Marker({
 			position: f.position,
 			map: isFiltered(f) ? map : null,
 			title: f.title,
 			icon: f.icon
 		});
+		// log(isFiltered(f))
 	})
 }
 
@@ -287,7 +287,9 @@ function addRemove(){
 
 function isFiltered(f){
 	var auj = today ? f.today : true;
-	return f.pricenumber <= price && auj
+	// if( == undefined)
+	// console.log(f.pricenumber <= price && auj,f.website,websites[f.website])
+	return f.pricenumber <= price && auj && websites[f.website]
 }
 
 
@@ -297,12 +299,20 @@ function saveClick(f){
 }
 
 function textwind(f){
-	return f["Data dodania"] + "<br><b>" + f.title + "</b><br>" + f.price + '<br><a href="'+ f.href +'" target="_blank">'+ lien[lang] +'</a><br>'
+	return '<div class="infowindow">'
+		+ f["Data dodania"] + "<br><b>"
+		+ f.title + '</b><br><span class="price">'
+		+ f.price + '</span><br><a href="'+ f.href +'" target="_blank">'+ lien[lang] + websiteText[f.website] +'</a><br></div>'
 }
 var lien = {
-	en: "See on Gumtree",
-	fr: "Voir sur Gumtree",
-	pl: "Zobacz na Gumtree"
+	en: "See on ",
+	fr: "Voir sur ",
+	pl: "Zobacz na "
+}
+var websiteText = {
+	gumtree: "Gumtree",
+	otodom: "Otodom",
+	gratka: "Gratka"
 }
 
 var orangeIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
@@ -318,7 +328,7 @@ var user;
 if(location.hostname == "localhost") {
     localStorage.user = "Gaspard";
     user = localStorage.user;
-} else {
+} else if(!localStorage.user){
     localStorage.user = Date.now();
     user = localStorage.user;
 }

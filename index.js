@@ -81,8 +81,9 @@ var log = console.log;
 
 
 var rootUrl = "https://www.gumtree.pl";
+var rootGratka = "http://dom.gratka.pl";
 
-var queryUrls = [
+var gumtreeUrls = [
 	'https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/v1c9000l3200208p1?fr=ownr',
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-2/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9000l3200208p2?fr=ownr",
@@ -91,7 +92,6 @@ var queryUrls = [
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-6/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-7/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-8/v1c9000l3200208p2?fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-9/v1c9000l3200208p2?fr=ownr",
 
 	'https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/v1c9008l3200208p1?fr=ownr',
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-2/v1c9008l3200208p1?fr=ownr",
@@ -101,31 +101,76 @@ var queryUrls = [
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-6/v1c9008l3200208p1?fr=ownr",
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-7/v1c9008l3200208p1?fr=ownr",
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-8/v1c9008l3200208p1?fr=ownr",
-	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-9/v1c9008l3200208p1?fr=ownr"
-]
+];
+
+var otodomUrls = [
+	"https://www.otodom.pl/wynajem/mieszkanie/krakow/?search%5Bdescription%5D=1&search%5Bprivate_business%5D=private&search%5Bcreated_since%5D=3&search%5Bdist%5D=0&search%5Bsubregion_id%5D=410&search%5Bcity_id%5D=38&nrAdsPerPage=72",
+
+	"https://www.otodom.pl/wynajem/pokoj/krakow/?search%5Bdescription%5D=1&search%5Bprivate_business%5D=private&search%5Bcreated_since%5D=3&search%5Bdist%5D=0&search%5Bsubregion_id%5D=410&search%5Bcity_id%5D=38&nrAdsPerPage=72",
+];
+
+var gratkaUrls = [
+	"http://dom.gratka.pl/mieszkania-do-wynajecia/lista/,krakow,3d,d_0,on,od,sr,zi.html",
+	"http://dom.gratka.pl/pokoje-do-wynajecia/lista/,krakow,3d,on,od,zi.html",
+];
+
+
+function update(){
+	gumtreeUrls.forEach(l=>{
+		getList(l,"gumtree")
+	})
+	otodomUrls.forEach(l=>{
+		getList(l,"otodom")
+	})
+	gratkaUrls.forEach(l=>{
+		getList(l,"gratka")
+	})
+	var obj = {
+		timestamp: Date.now(),
+		date: new Date() + ""
+	}
+	log("Update started on "+obj.date)
+	removeOld();
+	database.ref('lastupdate').set(obj)
+}
+// update()
 
 
 
-
-function getList(urlz){ 
+function getList(urlz,website){ 
+	// log(urlz)
 	request(urlz, function (error, response, body) {
-			// console.log('error:', error); // Print the error if one occurred 
-			// console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
-			// console.log('body:', body); // Print the HTML for the Google homepage. 
-
+		// log(error,response,body)
 		const $ = cheerio.load(body)
 
-		$('.href-link').each((i,e) =>{
-			// log(rootUrl+e.attribs.href)
-	 		getFlat(rootUrl+e.attribs.href)
-		})
+		if(website == "gumtree"){
+			// log("Gettin gumtree ads")
+			$('.href-link').each((i,e) =>{
+		 		getFlat(rootUrl+e.attribs.href,website)
+			})
+		} else if(website == "otodom"){
+
+			// log("Gettin otodom ads")
+			$('.offer-item').each((i,e) =>{
+				// log($(e).attr("data-url"))
+		 		getOtodom($(e).attr("data-url"),$(e).attr("data-item-id"))
+			})
+		} else if(website == "gratka"){
+
+			// log("Gettin gratka ads")
+			$('li.linkDoKarty > a').each((i,e) =>{
+				// log($(e).attr("href"))
+		 		getGratka(rootGratka + $(e).attr("href"))
+			})
+		}
 	})
 }
 
+// getList(gratkaUrls[0],"gratka")
 // var maison = 'https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/2+pokojowe-54-m2-olsza-do-wynajecia/1001999439920911108367709';
 var krakow = [50.0646501,19.9449799];
 
-function getFlat(url){
+function getFlat(url,website){
 
 		
 	request(url, function (error, response, body) {
@@ -136,6 +181,7 @@ function getFlat(url){
 
 		props.id = id;
 		props.href = url;
+		props.website = "gumtree";
 
 		$('.attribute').each((i,e)=>{
 			var name = $(e).find(".name").text();
@@ -196,7 +242,7 @@ function getFlat(url){
 								obj = Object.assign(obj,body.results[0].geometry.location)
 								database.ref('streets/'+streetKey(s)).update(obj)
 								
-								database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
+								// database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
 								database.ref("smalls/"+id+'/streets/'+streetKey(s)).update(obj)
 							} else {
 								database.ref('streets/'+streetKey(s)).update({google: "notfound"})
@@ -206,7 +252,7 @@ function getFlat(url){
 				 		return true;
 				 	} else {
 				 		obj = Object.assign(obj,snapshot.val());
-				 		database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
+				 		// database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
 				 		database.ref("smalls/"+id+'/streets/'+streetKey(s)).update(obj)
 				 	}
 				});
@@ -232,12 +278,85 @@ function getFlat(url){
 			title: props.title || null,
 			streets: props.streets || null,
 			"Data dodania": props["Data dodania"] || null,
+			website: "gumtree",
 			refreshed: Date.now()
 		};
 		database.ref("smalls/"+id).update(small)
 
 	})
 }
+
+function getOtodom(url,id){
+	request(url, function (error, response, body) {
+		$ = cheerio.load(body)
+		var props = {};
+
+		// var id = url.split("/").pop();
+
+		props.id = id;
+		props.href = url;
+		props.website = "otodom";
+
+		props.title = $('h1').first().text()
+		// log($(".box-price-value").first().text())
+		props.price = removeUnnecessary($(".box-price-value").first().text())
+		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
+		// console.log(props.pricenumber)
+
+
+		var map = $("#adDetailInlineMap");
+		props.lat = parseFloat(map.attr("data-lat"));
+		props.lng = parseFloat(map.attr("data-lon"));
+
+		props.refreshed = Date.now();
+		props["Data dodania"] = $(".updated .right p:nth-child(2)").text().split(" ")[2].replace(/\./g,"/")
+
+		log(id);
+
+		database.ref("smalls/"+id).update(props)
+
+
+	})
+}
+
+function getGratka(url){
+	request(url, function (error, response, body) {
+		$ = cheerio.load(body)
+		var props = {};
+
+		var id = url.split("-")[1];
+
+		props.id = id;
+		props.href = url;
+		props.website = "gratka";
+
+		props.title = removeUnnecessary($('h1').first().text());
+		// log($(".box-price-value").first().text())
+		props.price = removeUnnecessary($(".cenaGlowna b").first().text()+" zł")
+		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
+		// console.log(props.pricenumber)
+
+
+		var map = $("#adDetailInlineMap");
+		props.lat = parseFloat($(".latitude").text());
+		props.lng = parseFloat($(".longitude").text());
+
+		props.refreshed = Date.now();
+		d = new Date();
+		var jour = d.getDate();
+		var mois = d.getMonth()+1;
+		var annee = d.getYear()+1900;
+		props["Data dodania"] = (jour < 10 ? "0"+jour : jour ) + "/" + (mois < 10 ? "0"+mois : mois ) + "/" + annee;
+
+		log(id);
+
+		database.ref("smalls/"+id).update(props)
+
+
+	})
+}
+
+// getOtodom("https://www.otodom.pl/oferta/mieszkanie-do-wynajecia-2-pokojowe-ID3i9Tu.html","3i9Tu")
 
 function removeOld(){
 	database
@@ -253,18 +372,6 @@ function removeOld(){
 	})
 }
 
-function update(){
-	queryUrls.forEach(l=>{
-		getList(l)
-	})
-	var obj = {
-		timestamp: Date.now(),
-		date: new Date() + ""
-	}
-	log("Update started on "+obj.date)
-	removeOld();
-	database.ref('lastupdate').set(obj)
-}
 
 function removeUnnecessary(t){
 	return t.replace(/\t/g,'').replace(/\n/g,'').replace(/ +/g,' ');
@@ -301,13 +408,14 @@ app.get('/update', function(req, res) {
 	.then(function(snapshot) {
 
 		var lastupdate = snapshot.val().timestamp;
-		console.log(Date.now(),lastupdate,Date.now()-lastupdate)
-
+		// console.log(Date.now(),lastupdate,Date.now()-lastupdate)
+		// update()
 		if(Date.now() - lastupdate > 3600000){
 			res.send('Update started');
 			update();
 		} else {
 			res.send('Updated less than an hour ago');
+			log('Updated less than an hour ago')
 		}
 	})
  

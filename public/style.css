@@ -120,7 +120,7 @@ label[for=today]{
 	top: 4rem;
 }
 .settings{
-	/* padding-bottom: 0.1rem; */
+	padding-bottom: 0.1rem;
 	padding-top: 1rem;
 	position: relative;
 }
@@ -134,6 +134,9 @@ label[for=today]{
 #todayrow{
 	margin-top: 0;
 	margin-bottom: 2rem;
+}
+.websitesrow{
+	margin-top: 0.2rem;
 }
 
 .background{
@@ -164,6 +167,28 @@ label[for=today]{
 	color: #eeeeee;
 }
 
-.gm-style-iw{
+.infowindow{
 	font-family: 'Lato', sans-serif;
+	max-width: 250px;
+	line-height: 1.4rem;
 }
+.price{
+	background-color: #0052b4;
+	color: white;
+	border-radius: 2px;
+	padding: 1px 4px 0px;
+	margin: 1px 0;
+	display: inline-block;
+}
+.infowindow a:hover{
+	text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
