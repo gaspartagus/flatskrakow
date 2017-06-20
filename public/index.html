@@ -158,7 +158,8 @@ function addDialogs(){
 				} else {
 					f.infowindow = new google.maps.InfoWindow({
 						content: textwind(f)
-					});					
+					});
+							
 					f.marker.addListener('click', function() {
 						// log("Just clicked a dot")
 						if(openDialog == f.infowindow){
@@ -171,8 +172,12 @@ function addDialogs(){
 							openDialog.close();
 						}
 						openDialog = f.infowindow;
-						// log("Just opened the window")
-						saveClick(f);
+						if(!f.clickevent){
+							f.clickevent = true;
+							$("#"+f.id).on("click",e=>{log("lol tu m'as vu "+f.id); saveClick(f)})
+						}
+						// log(f)
+						// saveClick(f);
 					});
 
 					f.infowindow.addListener('closeclick', function(){
@@ -276,7 +281,8 @@ function addRemove(){
 
 		if(f.marker){
 			if(isFiltered(f)){
-				f.marker.setMap(map)
+				if(!f.marker.map)
+				f.marker.setMap(map);
 			} else {
 				f.marker.setMap(null)
 			}
@@ -302,7 +308,7 @@ function textwind(f){
 	return '<div class="infowindow">'
 		+ f["Data dodania"] + "<br><b>"
 		+ f.title + '</b><br><span class="price">'
-		+ f.price + '</span><br><a href="'+ f.href +'" target="_blank">'+ lien[lang] + websiteText[f.website] +'</a><br></div>'
+		+ f.price + '</span><br><a id="'+ f.id +'" href="'+ f.href +'" target="_blank">'+ lien[lang] + websiteText[f.website] +'</a><br></div>'
 }
 var lien = {
 	en: "See on ",

@@ -65,20 +65,21 @@
 edit(e){
 	window.price = this.refs.price.value || Infinity;
   localStorage.price = window.price;
-	console.log(this.refs.price.value)
+  this.price = window.price;
+	// console.log(this.refs.price.value)
 	addRemove();
 }
 
 filterToday(e){
 	window.today = e.target.checked;
   localStorage.today = e.target.checked;
-  console.log(e.target.checked)
+  // console.log(e.target.checked)
 	addRemove();
 }
 filterWebsites(e){
   window.websites[e.target.id] = e.target.checked;
   localStorage[e.target.id] = e.target.checked;
-  console.log(window.websites)
+  // console.log(window.websites)
   addRemove();
 
 }
@@ -100,6 +101,8 @@ this.gumtree = JSON.parse(localStorage.gumtree || true);
 this.gratka = JSON.parse(localStorage.gratka || false);
 this.otodom = JSON.parse(localStorage.otodom || false);
 
+window.price = this.price;
+window.today = this.today;
 window.websites = {
   gumtree : this.gumtree,
   otodom: this.otodom,

@@ -91,7 +91,8 @@ var gumtreeUrls = [
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-5/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-6/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-7/v1c9000l3200208p2?fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-8/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-8/v1c9000l3200208p8?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-9/v1c9000l3200208p8?fr=ownr",
 
 	'https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/v1c9008l3200208p1?fr=ownr',
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-2/v1c9008l3200208p1?fr=ownr",
@@ -364,7 +365,7 @@ function removeOld(){
 	.then(function(snapshot) {
 		var flats = snapshot.val();
 		for(var id in flats){
-			if(Date.now() - flats[id].refreshed > 1000*3600*24*3){
+			if(Date.now() - flats[id].refreshed > 1000*3600*24*2){
 				log('removed '+id)
 				database.ref('smalls').child(id).remove();
 			}
