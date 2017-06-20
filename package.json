@@ -8,11 +8,6 @@
   },
   "dependencies": {
     "express": "latest",
-    "multer": "latest",
-    "pg": "latest",
-    "sql": "latest",
-    "body-parser": "latest",
-    "ejs": "latest",
     "request": "latest",
     "cheerio": "latest",
     "firebase-admin": "latest"
