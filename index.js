@@ -227,6 +227,8 @@ function getFlat(url){
 			lng: props.lng || null,
 			id: props.id || null,
 			price: props.price || null,
+			pricenumber: props.pricenumber || null,
+			href: props.href || null,
 			title: props.title || null,
 			streets: props.streets || null,
 			"Data dodania": props["Data dodania"] || null,
