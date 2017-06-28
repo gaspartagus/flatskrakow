@@ -69,7 +69,7 @@ console.log(app.name);  // "[DEFAULT]"
 
 database = firebase.database();
 
-flats  = database.ref('flats');
+// flats  = database.ref('flats');
 
 
 var request = require('request');
@@ -268,7 +268,7 @@ function getFlat(url,website){
 
 		//
 		props.description = ""
-		database.ref("flats/"+id).update(props)
+		// database.ref("flats/"+id).update(props)
 		var small = {
 			lat: props.lat || null,
 			lng: props.lng || null,

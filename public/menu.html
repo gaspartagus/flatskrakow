@@ -19,6 +19,8 @@
   <h5 class="titre"><raw content={ text1 }/></h5>
   <p class="subtitle">{ text10 }</p>
   <p><raw content={ text2 }/></p>
+  
+  
 
   <p class="title">{ text7 }</p>
   <div class="settings white-text">
@@ -46,7 +48,15 @@
       </div>
     </div>
   </div>
-  
+
+  <p class="title">ADVERTISEMENT</p>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-4088122572203199"
+       data-ad-slot="3525771463"
+       data-ad-format="auto"></ins>
+
+
   <div id="legende">
     <p class="title">{ text3 }</p>
     <ul>
@@ -66,7 +76,7 @@ edit(e){
 	window.price = this.refs.price.value || Infinity;
   localStorage.price = window.price;
   this.price = window.price;
-	// console.log(this.refs.price.value)
+	console.log(this.refs.price.value)
 	addRemove();
 }
 
@@ -101,7 +111,8 @@ this.gumtree = JSON.parse(localStorage.gumtree || true);
 this.gratka = JSON.parse(localStorage.gratka || false);
 this.otodom = JSON.parse(localStorage.otodom || false);
 
-window.price = this.price;
+window.price = this.price || Infinity;
+
 window.today = this.today;
 window.websites = {
   gumtree : this.gumtree,

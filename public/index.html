@@ -50,6 +50,14 @@ riot.mount('*');
 <script src="firebase-database.js"></script>
 <!-- <script type="text/javascript" src="date.js"></script> -->
 
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
 <script>
 
 if(lang == "fr") $("title").text("Cartes des annonces Gumtree");
@@ -348,8 +356,13 @@ if(localStorage.user != "Gaspard"){
     database.ref("pings").update(obj)
 }
 
+
+setTimeout(t=>{
+	database.ref("users/"+user).update({ advert: $(".adsbygoogle").height() })	
+}, 10000)
+
 </script>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>
+
 </body>
 </html>
