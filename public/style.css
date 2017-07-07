@@ -13,7 +13,85 @@ html{
   background-color: grey;
   font-size: 14px !important;
   font-family: 'Lato', sans-serif;
+  top: 0;
 }
+
+#accueil{
+	/* overflow: visible; */
+	/* height: 100%; */
+	position: absolute;
+	top: 17%;
+	left: 50%;
+	width: 400px;
+	z-index: 10000;
+}
+#krakow{
+	background-color: white;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+#krakow img{
+	position: fixed;
+	width: 1500px;
+	/* height: 100%; */
+	background-image: url('krakow.png');
+	z-index: 1000;
+	top: calc(17% - 296px);
+	left: calc(50% - 523px);
+	background-position: 50% 50%;
+	background-size: 100%;
+}
+#contenu{
+	z-index: 100000;
+	color: white;
+	position: relative;
+	/* width: 350px; */
+	/* top: 17%; */
+	/* left: 50%; */
+}
+#contenu > div{
+	padding: 0.9rem 1.5rem;
+}
+#contenu p,#contenu h1 {
+	margin: 0;
+	font-size: 1.2rem;
+}
+#contenu h1{
+	font-size: 3rem;
+	margin: 1rem 0;
+}
+#debut{
+	background-color: #212121;
+	/* box-sizing: content-box; */
+}
+.ligne{
+	width: 50%;
+	position: relative;
+}
+#ligne1{
+	background-color: #424242;
+}
+#ligne2{
+	left: 25%;
+	background-color: #616161;
+}
+#ligne3{
+	background-color: #757575;
+}
+#start{
+	width: 50%;
+	text-align: center;
+	border: solid 1rem white;
+	position: relative;
+	left: -25%;
+	background-color: #ff012a;
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+
 #menu{
 	position: absolute;
 	width: 340px;
@@ -22,8 +100,9 @@ html{
 	left: 0.5rem;
 	z-index: 1;
 	overflow-y: scroll;
-	padding-top: 1rem;
+	padding-top: 0rem;
 	overflow-x: hidden;
+	padding-bottom: 0;
 }
 menu {
 	padding: 0;
@@ -50,8 +129,28 @@ menu {
 	margin-bottom: 0;
 }
 }
-
-
+#climate{
+	width: calc(100% + 48px);
+	box-sizing: border-box;
+	left: -24px;
+	position: relative;
+	border: 4px solid white;
+}
+#adlink{
+	position: relative;
+	display: block;
+	z-index: 0;
+}
+#ad{
+	position: absolute;
+	top: -25px;
+	left: -20px;
+	z-index: 10;
+	color: #37474f;
+	font-size: 1.2rem;
+	background-color: #F5F5F5;
+	padding: 0 4px;
+}
 .titre{
 	width: calc(100% - 2rem);
 }
@@ -121,11 +220,11 @@ label[for=today]{
 }
 .settings{
 	padding-bottom: 0.1rem;
-	padding-top: 1rem;
+	padding-top: 1.1rem;
 	position: relative;
 }
 .settings > .row{
-	padding-bottom: 1rem;
+	padding-bottom: 2rem;
 }
 #pricerow{
 	margin-top: 1rem;
@@ -155,6 +254,7 @@ label[for=today]{
 #parametres{
 	height: calc(100%);
 	background-color: #37474F;
+	/* padding-bottom: 5rem; */
 }
 [type="checkbox"]+label:before, [type="checkbox"]:not(.filled-in)+label:after{
 	border-color: #eeeeee;
@@ -183,10 +283,8 @@ label[for=today]{
 .infowindow a:hover{
 	text-decoration: underline;
 }
-
-
-
-
+#lolz{position: relative;height: 160px;}
+#ggad{position: absolute;top: 0;left: -24px;z-index: 1;width: calc(100% + 48px);height: 159px;/* background-color: rgba(128, 45, 45, 0.82); */}
 
 
 

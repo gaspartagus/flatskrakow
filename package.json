@@ -10,7 +10,8 @@
     "express": "latest",
     "request": "latest",
     "cheerio": "latest",
-    "firebase-admin": "latest"
+    "firebase-admin": "latest",
+    "lz-string": "latest"
   },
   "engines": {
     "node": "latest"

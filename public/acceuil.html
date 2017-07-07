@@ -1,46 +1,36 @@
-<acceuil>
+<accueil>
 
 
-<div id="gris"></div>
-
-<div id="acceuil" class="card-panel">
-	<langue/>
+<div if={ !started } id="accueil">
 	
-	<h5 class="titre"><raw content={ text1 }/></h5>
-	<p class="subtitle">{ text10 }</p>
-	<p><raw content={ text2 }/></p>
 
-
-	<div id="legende">
-		<p class="title">{ text3 }</p>
-		<ul>
-			<li><img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png">{ text4 }</li>
-			<li><img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png">{ text5 }</li>
-			<li><img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png">{ text6 }</li>
-		</ul>
+	<div id="krakow">
+		<img src="krakow.png">
 	</div>
-
-	<div class="row">
-		<button>Begin</button>
+	<div id="contenu">
+		<div id="debut">
+			<langue/>
+			<h1>FLATS KRAKOW</h1>
+			<p><raw content={ text2 }/></p>
+		</div>
+		<div class="ligne" id="ligne1"><p>{ text3 }</p></div>
+		<div class="ligne" id="ligne2"><p>{ text4 }</p></div>
+		<div class="ligne" id="ligne3"><p>{ text5 }</p></div>
+		<div id="start" onclick={ start }>{ text6 }</div>
+		
 	</div>
+	
 </div>
 
 
 
 <script>
+this.started = false;
 
-
-langue(e){
-	// console.log(e,e.target.attributes.ref.nodeValue)
-	lang = e.target.attributes.ref.nodeValue;
-  this.ln = lang;
-	this.words()
-  localStorage.lang = lang;
-  addDialogs();
-	// this.update()
-	// lang
+start(e){
+	this.started = true;
+	// console.log(e)
 }
-this.ln = lang;
 
 
 this.on('mount', function(){
@@ -48,54 +38,34 @@ this.on('mount', function(){
 
 var text = {
   text1 : {
-    en : "Rooms and Flats in Krakow",
+    en : "FLATS KRAKOW",
     pl : "Pokoje i mieszkania w Krakowie",
     fr : "Chambres et Appartements à Cracovie",
   },
-  text10 : {
-    en : "Gumtree offers",
-    pl : "Oferty z Gumtree",
-    fr : "Offres de Gumtree.pl",
-  },
   text2 : {
-    en : "A map of the gumtree adverts for rooms, appartments and houses to rent <b>directly by owners</b> in Krakow",
-    pl : "Mapa ogłoszeń Gumtree o wynajmie pokojów, mieszkań i domów; ogłoszenia <b>od właściciela</b>.",
+    en : "A map of rooms, apartments and houses to rent in Krakow.<br>Adverts from Gumtree, Gratka and Otodom.",
+    pl : "Mapa ogłoszeń o wynajmie pokojów, mieszkań i domów; ogłoszenia od Gumtree, Gratka i Otodom.",
     fr : "Une carte des annonces Gumtree.pl (propriétaires uniquement) des chambres et appartements à louer à Cracovie",
   },
   text3 : {
-    en : "Color legend",
-    pl : "Legenda",
-    fr : "Légende",
+    en : "From owners only",
+    pl : "Tylko od właściciela",
+    fr : "Annonces de propriétaires uniquement",
   },
   text4 : {
-    en : "Position given by the owner",
-    pl : "Pozycja podana przez właściciela",
-    fr : "Adresse donnée par le propriétaire",
+    en : "Only the most freshly published adverts",
+    pl : "Tylko najświeższe ogłoszenia",
+    fr : "Seulement les annonces les plus fraiches",
   },
   text5 : {
-    en : "Position guessed from the street name in the title or the description of the advert (sometimes inaccurate)",
-    pl : "Pozycja ustalona na podstawie nazwy ulicy w tytule lub treści ogłoszenia (czasami niedokładna)",
-    fr : "Position devinée avec les noms de rues dans le titre ou le texte de l'annonce (parfois imprécis)",
+    en : "All real estate ads in one place",
+    pl : "Wszystkie ogłoszenia w jednym miejscu",
+    fr : "Tout sur une seule carte",
   },
   text6 : {
-    en : "All other un-located adverts",
-    pl : "Pozostałe, niezlokalizowane ogłoszenia",
-    fr : "Toutes les autres annonces non localisées",
-  },
-  text7 : {
-    en : "Settings",
-    pl : "Ustawienia",
-    fr : "Paramètres",
-  },
-  text8 : {
-    en : "Maximum price (zł)",
-    pl : "Cena maksymalna",
-    fr : "Prix maximum",
-  },
-  text9 : {
-    en : "Show only the ads posted today",
-    pl : "Tylko ogłoszenia dodane dzisiaj",
-    fr : "Ne montrer que les annonces postées aujourd'hui",
+    en : "START",
+    pl : "START",
+    fr : "COMMENCER",
   },
   text : {
     en : "",
@@ -114,8 +84,9 @@ this.words = function(){
 this.words();
 
 this.on("update",e=>{
+	this.words();
 	console.log("updating")
-  riot.mount('raw')
+	riot.mount('raw')
 })
 
 
@@ -129,14 +100,7 @@ this.on("update",e=>{
 
 
 
-
-
-
-
-
-
-
-</acceuil>
+</accueil>
 
 
 
@@ -154,26 +118,29 @@ this.on("update",e=>{
 
 <div class="langues clearfix">
     <div class="clearfix">
-  		<img src="en.png" id="en" ref="en" onclick={ langue } class="{ lang == 'en' ? 'selected' : '' }">
-  		<img src="pl.png" id="pl" ref="pl" onclick={ langue } class="{ lang == 'pl' ? 'selected' : '' }">
-  		<img src="fr.png" id="fr" ref="fr" onclick={ langue } class="{ lang == 'fr' ? 'selected' : '' }">
+  		<img src="en.png" id="en" ref="en" onclick={ langue } class={ selected : lang == 'en' }>
+  		<img src="pl.png" id="pl" ref="pl" onclick={ langue } class={ selected : lang == 'pl' }>
+  		<img src="fr.png" id="fr" ref="fr" onclick={ langue } class={ selected : lang == 'fr' }>
     </div>
 </div>
 
 <script>
-
+this.lang = window.lang;
 
 langue(e){
 	// console.log(e,e.target.attributes.ref.nodeValue)
-	lang = e.target.attributes.ref.nodeValue;
-	this.ln = lang;
-	this.words()
-	localStorage.lang = lang;
-	addDialogs();
+	this.lang = e.target.attributes.ref.nodeValue;
+	window.lang = this.lang
+
+	localStorage.lang = this.lang;
 	
 	riot.update()
+	addDialogs();
 }
-this.ln = lang;
+
+this.on("update", e=>{
+	this.lang = localStorage.lang;
+})
 
 </script>
 

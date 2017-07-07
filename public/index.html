@@ -2,10 +2,11 @@
 <html>
 
 <head>
-<title>Gumtree Ads on a Map</title>
+<title>Flats Krakow</title>
 
 <link rel="icon" type="image/png" href="map.png">
 <link rel="image_src" type="image/png" href="facebook.jpg">
+<meta name="description" content="A map of rooms, apartments and houses to rent in Krakow. Adverts from Gumtree, Gratka and Otodom."/>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -17,15 +18,22 @@
 <link href="style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
 <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
 </head>
 
 <body>
+
+<accueil></accueil>
+
 
 <menu></menu>
 
 <div id="map"></div>
 
 <script src="menu.html" type="riot/tag"></script>
+<script src="acceuil.html" type="riot/tag"></script>
 <script src="riot+compiler.min.js"></script>
 
 <script type="text/javascript">
@@ -43,16 +51,17 @@ riot.mount('*');
 </script>
 
 <script src="jquery-2.1.1.min.js"></script>
-<script src="materialize.min.js"></script>
+<!-- <script src="materialize.min.js"></script> -->
 
 <!-- <script src="centreville.js"></script> -->
 <script src="firebase-app.js"></script>
 <script src="firebase-database.js"></script>
 <!-- <script type="text/javascript" src="date.js"></script> -->
+<script language="javascript" src="lz-string.min.js"></script>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>
 
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
 <script>
   (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
@@ -60,8 +69,8 @@ riot.mount('*');
 
 <script>
 
-if(lang == "fr") $("title").text("Cartes des annonces Gumtree");
-if(lang == "pl") $("title").text("Mapa ogłoszeń Gumtree");
+// if(lang == "fr") $("title").text("Cartes des annonces Gumtree");
+// if(lang == "pl") $("title").text("Mapa ogłoszeń Gumtree");
 
 function log(e){ console.log(e) }
 
@@ -93,10 +102,10 @@ today = false;
 
 function downloadFlats(){
 	
-	database.ref('smalls').once('value').then(function(snapshot) {
+	database.ref('smallz').once('value').then(function(snapshot) {
 		log("flats arrived")
-		
-		saveFlats(snapshot)
+		var fl = snapshot.val()
+		saveFlats(fl)
 
 		if(map){
 			addMarkers();
@@ -104,24 +113,49 @@ function downloadFlats(){
 		}
 	});
 }
-downloadFlats();
+// downloadFlats();
 
+function downloadSmalls(){
+	
+	database.ref('compressed').once('value').then(function(snapshot) {
+		log("small arrived")
+		var v = snapshot.val();
+		var zstr = v.smallz;
+		var str = LZString.decompressFromUTF16(zstr);
+		log("small decompressed")
+		var fl = JSON.parse(str);
 
-function saveFlats(snapshot){
+		saveFlats(fl)
+
+		if(map){
+			addMarkers();
+			addDialogs();
+		}
+		// log(zstr,LZString.decompress(LZString.compress("srkjghalkhg.kwalufhsawlriuskdghjk.fe")))
+	});
+}
+downloadSmalls()
+
+function saveFlats(fl){
 	flats.forEach(f => {
 		if(f.marker){
 			f.marker.setMap(null);
 		}
 	})
 	flats = [];
-	var fl = snapshot.val();
-	// console.log(fl)
+	console.log(fl)
 	for(var i in fl) {
-			// console.log(fl[i])
-			var j = fl[i]["Data dodania"].split("/")
+		// if(fl[i].id == "1002020895060910728881709")
+		// console.log(fl[i].id);
+		if( fl[i].date ){
+
+			var j = fl[i].date.split("/")
 			var d = new Date();
 			fl[i].today = parseInt(j[0]) == d.getDate() && parseInt(j[1]) == d.getMonth()+1;
 			flats.unshift(fl[i]);
+
+		}
+		// console.log(fl[i])
 	}
 }
 
@@ -238,37 +272,13 @@ function addMarkers(){
 			
 		// console.log(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng))
 		// if the lat lng is far enough from the center
-		if(Math.abs(f.lat-krakow.lat)+Math.abs(f.lng-krakow.lng) > 0.0000002){
+
+		if(f.lat && n2(f,krakow) > 0.0000002){
 			f.position = {lat: parseFloat(f.lat), lng: parseFloat(f.lng)} ;
 			f.icon = redIcon;
-		} else if(streets.length) {
-
-			var rues = [];
-			streets.forEach(e => { rues.push(f.streets[e]) })
-			rues = rues.sort((a,b) => {
-				if(a.found == "title" && b.found == "description") return 1;
-				if(a.found == "description" && b.found == "title") return -1;
-				if(a.found == "title" && b.found == "title") {
-					if(a.index > b.index) return -1;
-					if(a.index < b.index) return 1;
-					if(a.index == b.index) return 0;
-				}
-				if(a.found == "description" && b.found == "description") {
-					if(a.index > b.index) return -1;
-					if(a.index < b.index) return 1;
-					if(a.index == b.index) return 0;
-				}
-				return 0;
-			})
-			// console.log(rues)
-			var str = rues.pop();
-			// console.log(str)
-			if(Math.abs(str.lat-krakow.lat)+Math.abs(str.lng-krakow.lng) > 0.0000002){
-				f.position = str;
-				f.icon = orangeIcon;
-			} else {
-				return true;
-			}
+		} else if(f.street && n2(f.street,krakow) > 0.0000002) {
+			f.position = f.street;
+			f.icon = orangeIcon;
 		} else {
 			// bezlocation.push(f)
 			// bezText = bezText + textwind(f);
@@ -314,9 +324,13 @@ function saveClick(f){
 
 function textwind(f){
 	return '<div class="infowindow">'
-		+ f["Data dodania"] + "<br><b>"
+		+ f.date + "<br><b>"
 		+ f.title + '</b><br><span class="price">'
 		+ f.price + '</span><br><a id="'+ f.id +'" href="'+ f.href +'" target="_blank">'+ lien[lang] + websiteText[f.website] +'</a><br></div>'
+}
+function n2(a,b){
+	if(!a.lat || !b.lat) return 0;
+	return Math.sqrt(Math.pow(a.lat-b.lat,2)+Math.pow(a.lng-b.lng,2))
 }
 var lien = {
 	en: "See on ",
@@ -326,19 +340,20 @@ var lien = {
 var websiteText = {
 	gumtree: "Gumtree",
 	otodom: "Otodom",
-	gratka: "Gratka"
+	gratka: "Gratka",
+	olx: "OLX"
 }
 
-var orangeIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
-var redIcon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-var blueIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+var orangeIcon = "https://maps.google.com/mapfiles/ms/icons/orange-dot.png";
+var redIcon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png";
+var blueIcon = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
 
 $.get( "https://thawing-citadel-9733.herokuapp.com/update", function( data ) {
   console.log(data);
 });
 
-var user;
+var user = localStorage.user;;
 if(location.hostname == "localhost") {
     localStorage.user = "Gaspard";
     user = localStorage.user;
@@ -350,8 +365,15 @@ if(location.hostname == "localhost") {
 // tracking users once
 if(localStorage.user != "Gaspard"){
     var obj = {}
-    var d = new Date();
-    var text = "0"+(d.getMonth()+1)+"-"+d.getDate()+" "+(d.getHours()<10?"0"+d.getHours():d.getHours() )+":"+(d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes() )+":"+(d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
+    var d = new Date(),
+        mois = d.getMonth()+1,
+        jour = d.getDate(),
+        heure = d.getHours(),
+        minute = d.getMinutes(),
+        seconde = d.getSeconds();
+
+    var text = ( mois<10?"0"+mois:mois )+"-"+( jour<10?"0"+jour:jour )+" "+( heure<10?"0"+heure:heure )+":"+( minute<10?"0"+minute:minute )+":"+( seconde<10?"0"+seconde:seconde );
+    
     obj[text] = localStorage.user + " " + lang + " from "+navigator.language;
     database.ref("pings").update(obj)
 }
@@ -360,6 +382,17 @@ if(localStorage.user != "Gaspard"){
 setTimeout(t=>{
 	database.ref("users/"+user).update({ advert: $(".adsbygoogle").height() })	
 }, 10000)
+
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-102158231-1', 'auto');
+  ga('send', 'pageview');
 
 </script>
 

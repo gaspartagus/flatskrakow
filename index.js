@@ -1,46 +1,4 @@
-/* var express = require('express')
-	, app = express()
-	, http = require('http').Server(app)
-	, io = require('socket.io')(http);
-
-app.set('port', (process.env.PORT || 5000))
-app.use(express.static(__dirname + '/public'))
-
-// app.get('/', function(request, response) {
-//   response.send('Hello World!')
-// })
-
-// io.configure(function () {
-//   io.set("transports", ["xhr-polling"]);
-//   io.set("polling duration", 10);
-// });
-
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-  	console.log(msg)
-    io.emit('chat message', msg);
-  });
-});
-
-app.listen(app.get('port'), function() {
-  console.log("Node app is running at localhost:" + app.get('port'))
-})
-*/
-
-// var express = require('express')
-// 	, app = express()
-// 	// , fs = require('fs')
-	// , eyes = require('eyes')
-	// , multer  = require('multer')
-	// , pg = require('pg')
-	// , sql = require('sql')
-	// , bodyParser = require('body-parser')
-	// , ejs = require('ejs')
-	// , $ = require('jquery')(require("jsdom").jsdom().parentWindow);
-	// , google = require('googleapis'
-	// , OAuth2 = google.auth.OAuth2;
-// ;
-
+// "ul. Spokojna",
 
 
 
@@ -74,6 +32,7 @@ database = firebase.database();
 
 var request = require('request');
 const cheerio = require('cheerio')
+var lzstring = require("lz-string");
 
 var log = console.log;
 
@@ -89,19 +48,19 @@ var gumtreeUrls = [
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-4/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-5/v1c9000l3200208p2?fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-6/v1c9000l3200208p2?fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-7/v1c9000l3200208p2?fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-8/v1c9000l3200208p8?fr=ownr",
-	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-9/v1c9000l3200208p8?fr=ownr",
+	// "https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-6/v1c9000l3200208p2?fr=ownr",
+	// "https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-7/v1c9000l3200208p2?fr=ownr",
+	// "https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-8/v1c9000l3200208p8?fr=ownr",
+	// "https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-9/v1c9000l3200208p8?fr=ownr",
 
 	'https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/v1c9008l3200208p1?fr=ownr',
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-2/v1c9008l3200208p1?fr=ownr",
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-3/v1c9008l3200208p1?fr=ownr",
 	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-4/v1c9008l3200208p1?fr=ownr",
-	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-5/v1c9008l3200208p1?fr=ownr",
-	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-6/v1c9008l3200208p1?fr=ownr",
-	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-7/v1c9008l3200208p1?fr=ownr",
-	"https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-8/v1c9008l3200208p1?fr=ownr",
+	// "https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-5/v1c9008l3200208p1?fr=ownr",
+	// "https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-6/v1c9008l3200208p1?fr=ownr",
+	// "https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-7/v1c9008l3200208p7?fr=ownr",
+	// "https://www.gumtree.pl/s-mieszkania-i-domy-do-wynajecia/krakow/page-8/v1c9008l3200208p1?fr=ownr",
 ];
 
 var otodomUrls = [
@@ -115,65 +74,210 @@ var gratkaUrls = [
 	"http://dom.gratka.pl/pokoje-do-wynajecia/lista/,krakow,3d,on,od,zi.html",
 ];
 
+var olxUrl = [
+	"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/krakow/?search%5Bprivate_business%5D=private"
+];
+
+var streets = {};
+
+function getStreets(){
+return new Promise((res,rjt)=>{
+	
+	database.ref("streets").once('value')
+	.then(function(snapshot) {
+		streets = snapshot.val()
+		log("streets loaded")
+		res();
+	})
+})
+}
 
 function update(){
-	gumtreeUrls.forEach(l=>{
-		getList(l,"gumtree")
+	var proms1 = gumtreeUrls.map(l=>{
+		return getListAsync(l,"gumtree")
 	})
-	otodomUrls.forEach(l=>{
-		getList(l,"otodom")
+	var proms2 = otodomUrls.map(l=>{
+		getListAsync(l,"otodom")
 	})
-	gratkaUrls.forEach(l=>{
-		getList(l,"gratka")
+	var proms3 = gratkaUrls.map(l=>{
+		getListAsync(l,"gratka")
 	})
+	var proms4 = olxUrl.map(l=>{
+		return getListAsync(l,"olx")
+	})
+	return Promise.all(proms1.concat(proms2,proms3,proms4))
 	var obj = {
 		timestamp: Date.now(),
 		date: new Date() + ""
 	}
 	log("Update started on "+obj.date)
-	removeOld();
-	database.ref('lastupdate').set(obj)
+	// removeOld();
+	// database.ref('lastupdate').set(obj)
 }
-// update()
 
+// .then(fillStreets)
 
+var count = 0;
+var smalls = {};
 
-function getList(urlz,website){ 
-	// log(urlz)
+// function getList(urlz,website){ 
+// 	// log(urlz)
+// 	request(urlz, function (error, response, body) {
+// 		// log(error,response,body)
+// 		const $ = cheerio.load(body)
+
+// 		if(website == "gumtree"){
+
+// 			var links = $('.href-link');
+
+// 			links.each((i,e) =>{
+// 		 		getFlat(rootUrl+e.attribs.href,website)
+// 			})
+// 		} else if(website == "otodom"){
+// 			var links = $('.offer-item')
+
+// 			count += links.length;
+
+// 			links.each((i,e) =>{
+
+// 		 		getOtodom($(e).attr("data-url"),$(e).attr("data-item-id"))
+// 			})
+// 		} else if(website == "gratka"){
+
+// 			var links = $('li.linkDoKarty > a')
+
+// 			links.each((i,e) =>{
+
+// 		 		getGratka(rootGratka + $(e).attr("href"))
+// 			})
+// 		} else if(website == "olx"){
+
+// 			var links = $('.detailsLink')
+
+// 			count += links.length;
+
+// 			links.each((i,e) =>{
+
+// 		 		getOlx(rootGratka + $(e).attr("href"))
+// 			})
+// 		}
+// 	})
+// }
+
+// getList(gratkaUrls[0],"gratka")
+// var maison = 'https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/2+pokojowe-54-m2-olsza-do-wynajecia/1001999439920911108367709';
+var krakow = {
+	lat: 50.0646501,
+	lng: 19.9449799
+};
+
+function searchStreet(description){
+
+	var rues = [];
+	centreville.forEach((s,i)=>{
+
+		var short = s.split(" ").pop();
+		if( short == undefined ) short = s;
+		if(short.length > 5) {
+
+			var index = description.search(short);
+
+			if (index > -1 ){
+				var obj = { index : index };
+
+				if(streets[streetKey(s)]){
+					obj = Object.assign(obj,streets[streetKey(s)]);
+					rues.push(obj)
+				}
+			}
+		}
+
+	})
+	rues = rues.sort((a,b) => {
+		if(a.index > b.index) return -1;
+		if(a.index < b.index) return 1;
+		if(a.index == b.index) return 0;
+		return 0;
+	})
+	return rues.pop()
+}
+function isPosValid(p){
+	if(p.website == "olx") return false;
+	if(p.website == "gumtree"){
+		// log(n2(p,krakow),p.lat)
+		if(n2(p,krakow) < 0.0000003 || !p.lat){
+			return false;
+		}
+	}
+	return true;
+
+}
+
+function getListAsync(urlz,website){
+return new Promise((resolve,reject) => {
+
 	request(urlz, function (error, response, body) {
 		// log(error,response,body)
 		const $ = cheerio.load(body)
 
 		if(website == "gumtree"){
-			// log("Gettin gumtree ads")
-			$('.href-link').each((i,e) =>{
-		 		getFlat(rootUrl+e.attribs.href,website)
-			})
+
+			var links = $('.href-link');
+
+			var promesses = Array.from(links.map((i,e) => {
+				var url = rootUrl+e.attribs.href
+		 		return getGumtree(url)
+			}))
+			Promise.all(promesses)
+			.then(resolve)
+
 		} else if(website == "otodom"){
 
-			// log("Gettin otodom ads")
-			$('.offer-item').each((i,e) =>{
-				// log($(e).attr("data-url"))
-		 		getOtodom($(e).attr("data-url"),$(e).attr("data-item-id"))
-			})
+			var links = $('.offer-item')
+
+			var promesses = Array.from(links.map((i,e) => {
+				var url = $(e).attr("data-url")
+				var id = $(e).attr("data-item-id")
+		 		return getOtodom(url,id)
+			}))
+			Promise.all(promesses)
+			.then(resolve)
+
 		} else if(website == "gratka"){
 
-			// log("Gettin gratka ads")
-			$('li.linkDoKarty > a').each((i,e) =>{
-				// log($(e).attr("href"))
-		 		getGratka(rootGratka + $(e).attr("href"))
-			})
+			var links = $('li.linkDoKarty > a')
+
+			var promesses = Array.from(links.map((i,e) => {
+				var url = rootGratka + $(e).attr("href");
+		 		return getGratka(url)
+			}))
+			Promise.all(promesses)
+			.then(resolve)
+
+		} else if(website == "olx"){
+
+			var links = $('.detailsLink')
+
+			var promesses = Array.from(links.map((i,e) => {
+				var url = $(e).attr("href");
+
+				if(url.split(".")[1] == "otodom"){
+					var id = url.split("-ID")[1].split(".")[0];
+					return getOtodom(url,id)
+				} else {
+		 			return getOlx(url)
+				}
+			}))
+			Promise.all(promesses)
+			.then(resolve)
+
 		}
 	})
+})
 }
 
-// getList(gratkaUrls[0],"gratka")
-// var maison = 'https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/2+pokojowe-54-m2-olsza-do-wynajecia/1001999439920911108367709';
-var krakow = [50.0646501,19.9449799];
-
-function getFlat(url,website){
-
-		
+function getGumtree(url,website){
+return new Promise((res,rej)=>{
 	request(url, function (error, response, body) {
 		$ = cheerio.load(body)
 		var props = {};
@@ -184,110 +288,42 @@ function getFlat(url,website){
 		props.href = url;
 		props.website = "gumtree";
 
-		$('.attribute').each((i,e)=>{
-			var name = $(e).find(".name").text();
-			var value = removeUnnecessary($(e).find(".value").text());
-			props[name] = value;
-			// console.log(name,value);
-		})
+		props.date = removeUnnecessary( $('.attribute .value').first().text() )
+
 		props.title = $('.myAdTitle').text()
 		props.price = removeUnnecessary($('.vip-title').find('.price').find('.value').text())
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
-		// console.log(props.pricenumber)
-		// if(props.pricenumber == NaN) return false;
-		props.description = $('.description').find('.pre').text()
-		props.streets = {};
 
-		// log($('.google-maps-link').length)
+		var description = removeUnnecessary($('.description').find('.pre').text())
 
 		if($('.google-maps-link').length){
 			var latlong = $('.google-maps-link').attr('data-uri').split("=")[1].split(",");
-			// log(parseFloat(latlong[0]),parseFloat(latlong[1]))
-			// log(krakow[0],krakow[1])
-			// if(Math.abs(parseFloat(latlong[0]) - krakow[0]) > 1 && Math.abs(parseFloat(latlong[1]) - krakow[1]) > 1){
+
 			props.lat = parseFloat(latlong[0])
 			props.lng = parseFloat(latlong[1])
-			// }
 		}
 
-		centreville.forEach((s,i)=>{
-
-			var short = s.split(" ").pop();
-			if( short == undefined ) short = s;
-			if(short.length <= 4) return true;
-
-			var index = props.title.search(short);
-			var found = "title"
-			if(index < 0) {
-				index = props.description.search(short);
-				found = "description";
+		if(! isPosValid(props)){
+			var rue = searchStreet(props.title + " " + description)
+			// console.log(rue)
+			if(rue){
+				log(rue)
+				props.street = rue;
+				delete props.lat;
+				delete props.lng;
 			}
-
-			if (index > -1 ){
-				var obj = { index : index, found : found };
-
-				firebase.database()
-				.ref('/streets/' + streetKey(s) ).once('value')
-				.then(function(snapshot) {
-					var snap = snapshot.val();
-				 	if(!snap){
-				 		log(s)
-				 		request(queryMapsUrl(s),function (error, response, body) {
-				 			if(!body) return true;
-							var body = JSON.parse(body);
-							// console.log(body)
-							if(body.results.length){
-								// props.streets[i].location = body.results[0].geometry.location;
-								
-								// obj[ streetKey(s) ] = body.results[0].geometry.location;
-								obj = Object.assign(obj,body.results[0].geometry.location)
-								database.ref('streets/'+streetKey(s)).update(obj)
-								
-								// database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
-								database.ref("smalls/"+id+'/streets/'+streetKey(s)).update(obj)
-							} else {
-								database.ref('streets/'+streetKey(s)).update({google: "notfound"})
-							}
-						})
-				 	} else if(snap.google == "notfound") {
-				 		return true;
-				 	} else {
-				 		obj = Object.assign(obj,snapshot.val());
-				 		// database.ref("flats/"+id+'/streets/'+streetKey(s)).update(obj)
-				 		database.ref("smalls/"+id+'/streets/'+streetKey(s)).update(obj)
-				 	}
-				});
-
-			}
-
-		})
-		// .replace(/\t/g,'').replace(/\n/g,'').replace(/ +/g,' ');
-
-		log(id);
-
-
-		//
-		props.description = ""
-		// database.ref("flats/"+id).update(props)
-		var small = {
-			lat: props.lat || null,
-			lng: props.lng || null,
-			id: props.id || null,
-			price: props.price || null,
-			pricenumber: props.pricenumber || null,
-			href: props.href || null,
-			title: props.title || null,
-			streets: props.streets || null,
-			"Data dodania": props["Data dodania"] || null,
-			website: "gumtree",
-			refreshed: Date.now()
-		};
-		database.ref("smalls/"+id).update(small)
-
+		}
+		log(id)
+		database.ref("smallz/"+id).update(props)
+		smalls[id] = props;
+		res();
 	})
+})
 }
 
+
 function getOtodom(url,id){
+return new Promise((res,rej)=>{
 	request(url, function (error, response, body) {
 		$ = cheerio.load(body)
 		var props = {};
@@ -310,17 +346,20 @@ function getOtodom(url,id){
 		props.lng = parseFloat(map.attr("data-lon"));
 
 		props.refreshed = Date.now();
-		props["Data dodania"] = $(".updated .right p:nth-child(2)").text().split(" ")[2].replace(/\./g,"/")
+		props.date = $(".updated .right p:nth-child(2)").text().split(" ")[2].replace(/\./g,"/")
 
 		log(id);
 
-		database.ref("smalls/"+id).update(props)
-
+		database.ref("smallz/"+id).update(props)
+		smalls[id] = props;
+		res();
 
 	})
+})
 }
 
 function getGratka(url){
+return new Promise((res,rej)=>{
 	request(url, function (error, response, body) {
 		$ = cheerio.load(body)
 		var props = {};
@@ -347,30 +386,135 @@ function getGratka(url){
 		var jour = d.getDate();
 		var mois = d.getMonth()+1;
 		var annee = d.getYear()+1900;
-		props["Data dodania"] = (jour < 10 ? "0"+jour : jour ) + "/" + (mois < 10 ? "0"+mois : mois ) + "/" + annee;
+		props.date = (jour < 10 ? "0"+jour : jour ) + "/" + (mois < 10 ? "0"+mois : mois ) + "/" + annee;
 
 		log(id);
 
-		database.ref("smalls/"+id).update(props)
+		database.ref("smallz/"+id).update(props)
+		smalls[id] = props;
+		res();
+
+	})
+})
+}
+
+function getOlx(url){
+return new Promise((res,rej)=>{
+	// log(url)
+	request(url, function (error, response, body) {
+		$ = cheerio.load(body)
+		var props = {};
+
+		var id = url.split("-ID")[1].split(".")[0];
+
+		props.id = id;
+		props.href = url;
+		props.website = "olx";
+
+		props.title = removeUnnecessary($('.offer-titlebox > h1').first().text());
+		var description = removeUnnecessary($('.descriptioncontent #textContent p').first().text());
+		// log($(".box-price-value").first().text())
+		props.price = removeUnnecessary($(".price-label strong").first().text())
+		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
+		// console.log(props.pricenumber)
+
+		var rue = searchStreet(props.title + " " + description)
+			// console.log(rue)
+		if(rue){
+			log(rue)
+			props.street = rue;
+		}
 
 
+		props.refreshed = Date.now();
+		d = new Date();
+		var jour = d.getDate();
+		var mois = d.getMonth()+1;
+		var annee = d.getYear()+1900;
+		props.date = (jour < 10 ? "0"+jour : jour ) + "/" + (mois < 10 ? "0"+mois : mois ) + "/" + annee;
+
+		log(id);
+
+		database.ref("smallz/"+id).update(props)
+		smalls[id] = props;
+		res();
+
+	})
+})
+}
+
+function fillStreets(){
+	var i = 0;
+	centreville.forEach(s=>{
+		
+		if(i>1000) return false;
+		var notfound = "";
+		if(streets[streetKey(s)]){
+			notfound = streets[streetKey(s)].google
+		}
+		if(!streets[streetKey(s)] || notfound == "no"){
+			i++;
+			log(streetKey(s))
+			request(queryMapsUrl(s),function (error, response, body) {
+	 			if(!body) return true;
+				var body = JSON.parse(body);
+				// console.log(body)
+				if(body.results.length){
+
+					log("Found : ",streetKey(s))
+					// props.streets[i].location = body.results[0].geometry.location;
+					
+					// obj[ streetKey(s) ] = body.results[0].geometry.location;
+					obj = body.results[0].geometry.location
+					database.ref('streets/'+streetKey(s)).update(obj)
+				} else {
+
+					log("Not found : ",streetKey(s))
+					database.ref('streets/'+streetKey(s)).update({google: "notfound"})
+				}
+			})
+			
+		}
 	})
 }
 
+
 // getOtodom("https://www.otodom.pl/oferta/mieszkanie-do-wynajecia-2-pokojowe-ID3i9Tu.html","3i9Tu")
+function compress(){
+return new Promise((resolve,reject)=>{
+	
+	database
+	.ref('smallz').once('value')
+	.then(function(snapshot) {
+		var flats = snapshot.val();
+		var str = JSON.stringify(flats);
+		// log(str.length)
+		var zstr = lzstring.compressToUTF16(str);
+		// log(zstr.length)
+		// log(lzstring.decompressFromUTF16(zstr))
+		database.ref("compressed").update({ smallz: zstr })
+		log("Compressed the database")
+		setTimeout(resolve,2000)
+	})
+})
+}
 
 function removeOld(){
+return new Promise((resolve,reject)=>{
 	database
-	.ref('smalls').once('value')
+	.ref('smallz').once('value')
 	.then(function(snapshot) {
 		var flats = snapshot.val();
 		for(var id in flats){
 			if(Date.now() - flats[id].refreshed > 1000*3600*24*2){
 				log('removed '+id)
-				database.ref('smalls').child(id).remove();
+				database.ref('smallz').child(id).remove();
 			}
 		}
+		log("Removed old records")
+		setTimeout(resolve,2000)
 	})
+})
 }
 
 
@@ -383,7 +527,9 @@ function queryMapsUrl(ul){
 function streetKey(s){
 	return s.replace(/\.|#|$|\/|\[|\]/g,"")
 }
-
+function n2(a,b){
+	return Math.sqrt(Math.pow(a.lat-b.lat,2)+Math.pow(a.lng-b.lng,2))
+}
 
 var express = require('express');
 var app = express();
@@ -404,6 +550,8 @@ app.use( allowCrossDomain );
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/update', function(req, res) {
 
+
+
   	firebase.database()
 	.ref('/lastupdate/').once('value')
 	.then(function(snapshot) {
@@ -411,12 +559,25 @@ app.get('/update', function(req, res) {
 		var lastupdate = snapshot.val().timestamp;
 		// console.log(Date.now(),lastupdate,Date.now()-lastupdate)
 		// update()
-		if(Date.now() - lastupdate > 3600000){
+		if(Date.now() - lastupdate > 3600*1000/2){
 			res.send('Update started');
-			update();
-		} else {
-			res.send('Updated less than an hour ago');
-			log('Updated less than an hour ago')
+
+			firebase.database().ref('/lastupdate/').update({
+				date: new Date() + "",
+				timestamp: Date.now()
+			})
+
+			getStreets()
+			.then(update)
+			.then(removeOld)
+			.then(compress)
+			.then(e=>{
+				log("Hourra !")
+			})
+		}
+		else {
+			res.send('Updated less than half an hour ago');
+			log('Updated less than half an hour ago')
 		}
 	})
  
@@ -428,183 +589,18 @@ app.get('/remove', function(req, res) {
  
 });
 
+app.get('/compress', function(req, res) {
+	res.send('Compressing the data');
+  	
+  	
+
+ 
+});
+
 app.listen(app.get('port'), function () {
   console.log('Example app listening on port '+app.get('port'))
 })
 
 
-
-
-
-
-
-
-
-
-
-// pg.connect(DATABASE_URL, function(err, client) {
-
-// 	app.get('/touslesarticles', function(req, res) {
-// 	    console.log('GET touslesarticles');
-// 		var getArticles = client.query(
-// 	       "SELECT * FROM articles",
-// 	    	function(err,result){
-// 	    		console.log(result.rows)
-// 	    		res.json(result.rows)
-//     		});
-// 	})
-// 	app.set('port', (process.env.PORT || 5000))
-// 	.use(express.static(__dirname + '/public'))
-// 	// .use(multer({
-// 	// 	dest: './uploads/'
-// 	// }))
-// 	app.use( bodyParser.json() );       // to support JSON-encoded bodies
-// 	app.use( bodyParser.urlencoded() );
-
-// 	app.get('/upload', function(request, response) {
-// 	    console.log('GET upload')
-// 		response.render('upload.ejs');
-// 	})
-// 	app.get('/create', function(request, response) {
-// 	    console.log('GET create')
-// 		response.render('create.ejs');
-// 	})
-// 	.get('/folder/:folder', function(req, res) {
-// 	    console.log('GET folder '+ req.params.folder);
-// 	    console.log('https://googledrive.com/host/'+req.params.folder)
-// 	    $.get('https://googledrive.com/host/'+req.params.folder,function(data,err){
-// 	    	console.log(data,err);
-// 	    });
-
-// 	})
-// 	.get('/bestof',function(req,res){
-// 		var getBests = client.query(
-// 	        "SELECT article_id, count(article_id) as popularity FROM profiles GROUP BY article_id ORDER BY popularity DESC",
-// 	    	function(err,result){
-// 	    		console.log(result.rows)
-// 	    		res.json(result.rows)
-//     		});
-// 	})
-
-
-
-
-
-
-
-// 	.get('/articles/:tag/:type', function(req, res) {
-// 	    console.log('GET articles/'+req.params.tag+'/'+req.params.type)
-
-
-// 	    var getArticles = client.query(
-// 	       "SELECT * FROM articles WHERE tag='"+ req.params.tag +"' AND type='"+ req.params.type +"'",
-// 	    	function(err,result){
-// 	    		console.log(result.rows)
-// 	    		res.json(result.rows)
-// 	    	});
-
-// 	})
-// 	.get('/articles/:tag', function(req, res) {
-// 	    console.log('GET articles/'+req.params.tag)
-
-// 	    var getArticles = client.query(
-// 	       "SELECT * FROM articles WHERE tag='"+ req.params.tag +"' ",
-// 	    	function(err,result){
-// 	    		console.log(result.rows)
-// 	    		res.json(result.rows)
-//     		});
-// 	})
-// 	.get('/articles', function(req, res) {
-// 	    console.log('GET articles')
-
-// 	    var getArticles = client.query(
-// 	       "SELECT * FROM articles",
-// 	    	function(err,result){
-// 	    		console.log(result.rows)
-// 	    		res.json(result.rows)
-// 	    	});
-// 	})
-// 	// app.use(busboy({ immediate: true }));
-// 	// // ...
-// 	// app.use(function(req, res) {
-// 	//   req.busboy.on('file', function(fieldname, file, filename) {
-// 	//     console.log(fieldname,file,filename);
-// 	//   });
-// 	//   console.log('no file')
-// 	// });
-
-// 	app.post('/file-upload', function(req, res) {
-// 	    // get the temporary location of the file
-// 	    console.log('POST file-upload')
-
-// 	    console.log(req.headers)
-// 	    console.log(req.files)
-
-// 	    var _id = req.headers._id;
-
-
-// 	    var tmp_path = req.files.file.path;
-// 	    // set where the file should actually exists - in this case it is in the "images" directory
-// 	    var target_path = './public/images/uploads/'
-// 	    	+ req.headers._id + '_'+ Date.now() + '.' + req.files.file.extension;
-// 	    console.log(target_path)
-// 	    // move the file from the temporary location to the intended location
-// 	    fs.rename(tmp_path, target_path, function(err) {
-// 	        if (err) throw err;
-// 	        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-// 	        fs.unlink(tmp_path, function() {
-// 	            if (err) throw err;
-// 	            res.send('File uploaded to: ' + target_path + ' - ' + req.files.file.size + ' bytes');
-// 	        });
-// 	    });
-
-		
-// 		var update = client.query("INSERT INTO articles_medias VALUES (" + _id + ",'" + target_path + "')");
-
-
-
-
-
-// 	});
-
-// 	app.post('/new-article', function(req, res) {
-// 	    // get the temporary location of the file
-// 	    console.log('POST new-article')
-
-// 	    console.log(req.body)
-
-		   
-		
-// 		var update = client.query("INSERT INTO articles (titre,resume,tag,folder,files,type) VALUES ('"
-// 			+ req.body.titre +"','"
-// 			+ req.body.resume +"','"
-// 			+ req.body.tag +"','"
-// 			+ req.body.folder +"','"
-// 			+ req.body.files +"','"
-// 			+ req.body.type
-// 			+ "')");
-
-// 	})
-// 	.post('/profile',function(req,res){
-// 		console.log('POST profile');
-// 		console.log(req.body)
-// 		var deletion = client.query("DELETE FROM profiles WHERE user_id='"+ req.body.user_id +"'");
-
-// 		var insertionString = "INSERT INTO profiles (article_id, user_id) VALUES ";
-// 		for (var i = req.body.favoris.length - 1; i >= 0; i--) {
-// 			insertionString += "(" + parseInt(req.body.favoris[i]) + "," + req.body.user_id + "),"
-// 		};
-// 		console.log(insertionString);
-// 		var insertion = client.query(insertionString.slice(0,-1));
-// 		res.json({status: 'OK'});
-// 	})
-
-
-
-// 	app.listen(app.get('port'), function() {
-// 	  console.log("Node app is running at localhost:" + app.get('port'))
-// 	})
-
-// });
 
 

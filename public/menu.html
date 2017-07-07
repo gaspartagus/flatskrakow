@@ -8,27 +8,40 @@
 
 
 <div id="menu" class="card-panel">
-  <div id="entete" class="background"></div>
-	<div class="langues clearfix">
+  <!-- <div id="entete" class="background"></div> -->
+	<!-- <div class="langues clearfix">
     <div class="clearfix">
   		<img src="en.png" id="en" ref="en" onclick={ langue } class="{ lang == 'en' ? 'selected' : '' }">
   		<img src="pl.png" id="pl" ref="pl" onclick={ langue } class="{ lang == 'pl' ? 'selected' : '' }">
   		<img src="fr.png" id="fr" ref="fr" onclick={ langue } class="{ lang == 'fr' ? 'selected' : '' }">
     </div>
-	</div>
-  <h5 class="titre"><raw content={ text1 }/></h5>
+  </div>
+ -->
+  <langue/>
+  <!-- <h5 class="titre"><raw content={ text1 }/></h5>
   <p class="subtitle">{ text10 }</p>
   <p><raw content={ text2 }/></p>
+   -->
   
+  <div id="legende">
+    <p class="title">{ text3 }</p>
+    <ul>
+      <li><img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png">{ text4 }</li>
+      <li><img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png">{ text5 }</li>
+      <li><img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png">{ text6 }</li>
+    </ul>
+  </div>
   
-
   <p class="title">{ text7 }</p>
+
   <div class="settings white-text">
     <div id="parametres" class="background"></div>
     <div class="row">
+
+      
       <div id="pricerow" class="input-field col s8 push-s2">
-        <input ref="price" id="price" type="number" onchange={ edit } step="50" value="{ price }">
-        <label for="price" ref="pricelabel">{ text8 }</label>
+        <input ref="price" id="price" type="number" onfocus={ activate } onblur={ deactivate } onchange={ edit } step="50" value="{ price }">
+        <label for="price" ref="pricelabel" class="{ activated ? 'active' : '' }">{ text8 }</label>
       </div>
       <div id="todayrow" class="input-field col s12">
         <input ref="today" id="today" type="checkbox" checked onchange={ filterToday }>
@@ -46,31 +59,33 @@
         <input ref="gratka" id="gratka" type="checkbox" checked onchange={ filterWebsites }>
         <label for="gratka">Gratka.pl</label>
       </div>
+      <div class="input-field col s12 websitesrow">
+        <input ref="olx" id="olx" type="checkbox" checked onchange={ filterWebsites }>
+        <label for="olx">OLX.pl</label>
+      </div>
     </div>
   </div>
-
-  <p class="title">ADVERTISEMENT</p>
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-4088122572203199"
-       data-ad-slot="3525771463"
-       data-ad-format="auto"></ins>
-
-
-  <div id="legende">
-    <p class="title">{ text3 }</p>
-    <ul>
-      <li><img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png">{ text4 }</li>
-      <li><img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png">{ text5 }</li>
-      <li><img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png">{ text6 }</li>
-    </ul>
+  <div id="lolz">
+    <!-- <a href="https://climate-lab.eu" target="_blank" id="adlink" onclick={ save }> -->
+      
+      <!-- <img id="climate" src="climate{ climate }.png"> -->
+    <!-- </a> -->
+    <div id="ggad">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-4088122572203199"
+           data-ad-slot="5682855463"
+           data-ad-format="auto"></ins>
+    </div>
   </div>
+  <!-- <p class="title">ADVERTISEMENT</p> -->
+<!-- Flatskrakow -->
 
 
 </div>
 
 <script>
-
+this.climate = Math.floor(Math.random()*3);
 
 edit(e){
 	window.price = this.refs.price.value || Infinity;
@@ -78,6 +93,14 @@ edit(e){
   this.price = window.price;
 	console.log(this.refs.price.value)
 	addRemove();
+}
+
+activate(e){
+  this.activated = true
+}
+deactivate(e){
+  if(! (this.refs.price.value > 0))
+  this.activated = false;
 }
 
 filterToday(e){
@@ -108,26 +131,32 @@ this.ln = lang;
 this.price = parseInt(localStorage.price || "");
 this.today = JSON.parse(localStorage.today || false);
 this.gumtree = JSON.parse(localStorage.gumtree || true);
-this.gratka = JSON.parse(localStorage.gratka || false);
-this.otodom = JSON.parse(localStorage.otodom || false);
+this.gratka = JSON.parse(localStorage.gratka || true);
+this.otodom = JSON.parse(localStorage.otodom || true);
+this.olx = JSON.parse(localStorage.olx || true);
 
 window.price = this.price || Infinity;
+this.activated = this.price || 0;
 
 window.today = this.today;
 window.websites = {
   gumtree : this.gumtree,
   otodom: this.otodom,
-  gratka: this.gratka
+  gratka: this.gratka,
+  olx: this.olx
 };
 
 
 this.on('mount', function(){
+
   if(!this.gumtree)
   this.refs.gumtree.removeAttribute("checked")
   if(!this.gratka)
   this.refs.gratka.removeAttribute("checked")
   if(!this.otodom)
   this.refs.otodom.removeAttribute("checked")
+  if(!this.olx)
+  this.refs.olx.removeAttribute("checked")
   if(!this.today)
   this.refs.today.removeAttribute("checked")
   if(this.price)
@@ -185,6 +214,11 @@ var text = {
     pl : "Tylko ogłoszenia dodane dzisiaj",
     fr : "Ne montrer que les annonces postées aujourd'hui",
   },
+  text11 : {
+    en : "ADVERT",
+    pl : "OGŁOSZENIE",
+    fr : "ANNONCE",
+  },
   text : {
     en : "",
     pl : "",
@@ -202,12 +236,22 @@ this.words = function(){
 this.words();
 
 this.on("update",e=>{
+
+  this.words();
 	console.log("updating")
   riot.mount('raw')
 })
 
+save(){
+  saveClick({ id: "climatelab"});
+}
 
+function updateScroll(){
+    var element = document.getElementById("menu");
+    element.scrollTop = element.scrollHeight;
+}
 
+setTimeout(updateScroll,5000)
 
 
 </script>
