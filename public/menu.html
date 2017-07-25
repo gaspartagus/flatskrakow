@@ -66,10 +66,10 @@
     </div>
   </div>
   <div id="lolz">
-    <!-- <a href="https://climate-lab.eu" target="_blank" id="adlink" onclick={ save }> -->
+    <a if={ climate } href="https://climate-lab.eu" target="_blank" id="adlink" onclick={ save }>
       
-      <!-- <img id="climate" src="climate{ climate }.png"> -->
-    <!-- </a> -->
+      <img id="climate" src="climate{ climate - 1 }.png">
+    </a>
     <div id="ggad">
       <ins class="adsbygoogle"
            style="display:block"
@@ -85,7 +85,7 @@
 </div>
 
 <script>
-this.climate = Math.floor(Math.random()*3);
+// this.climate = Math.floor(Math.random()*3);
 
 edit(e){
 	window.price = this.refs.price.value || Infinity;
@@ -145,6 +145,11 @@ window.websites = {
   gratka: this.gratka,
   olx: this.olx
 };
+
+this.on('update', function() {
+  if(window.climate)
+    this.climate = window.climate;
+})
 
 
 this.on('mount', function(){

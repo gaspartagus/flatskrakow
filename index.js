@@ -75,7 +75,9 @@ var gratkaUrls = [
 ];
 
 var olxUrl = [
-	"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/krakow/?search%5Bprivate_business%5D=private"
+	"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/krakow/?search%5Bprivate_business%5D=private",
+	"https://www.olx.pl/nieruchomosci/stancje-pokoje/krakow/?search%5Bprivate_business%5D=private",
+	"https://www.olx.pl/nieruchomosci/domy/wynajem/krakow/?search%5Bprivate_business%5D=private"
 ];
 
 var streets = {};
@@ -120,49 +122,7 @@ function update(){
 var count = 0;
 var smalls = {};
 
-// function getList(urlz,website){ 
-// 	// log(urlz)
-// 	request(urlz, function (error, response, body) {
-// 		// log(error,response,body)
-// 		const $ = cheerio.load(body)
 
-// 		if(website == "gumtree"){
-
-// 			var links = $('.href-link');
-
-// 			links.each((i,e) =>{
-// 		 		getFlat(rootUrl+e.attribs.href,website)
-// 			})
-// 		} else if(website == "otodom"){
-// 			var links = $('.offer-item')
-
-// 			count += links.length;
-
-// 			links.each((i,e) =>{
-
-// 		 		getOtodom($(e).attr("data-url"),$(e).attr("data-item-id"))
-// 			})
-// 		} else if(website == "gratka"){
-
-// 			var links = $('li.linkDoKarty > a')
-
-// 			links.each((i,e) =>{
-
-// 		 		getGratka(rootGratka + $(e).attr("href"))
-// 			})
-// 		} else if(website == "olx"){
-
-// 			var links = $('.detailsLink')
-
-// 			count += links.length;
-
-// 			links.each((i,e) =>{
-
-// 		 		getOlx(rootGratka + $(e).attr("href"))
-// 			})
-// 		}
-// 	})
-// }
 
 // getList(gratkaUrls[0],"gratka")
 // var maison = 'https://www.gumtree.pl/a-mieszkania-i-domy-do-wynajecia/krakow/2+pokojowe-54-m2-olsza-do-wynajecia/1001999439920911108367709';
@@ -175,6 +135,9 @@ function searchStreet(description){
 
 	var rues = [];
 	centreville.forEach((s,i)=>{
+		var rue = streets[streetKey(s)] || {};
+		if(!rue.lat) return true;
+
 
 		var short = s.split(" ").pop();
 		if( short == undefined ) short = s;
@@ -289,6 +252,7 @@ return new Promise((res,rej)=>{
 		props.website = "gumtree";
 
 		props.date = removeUnnecessary( $('.attribute .value').first().text() )
+		props.refreshed = Date.now();
 
 		props.title = $('.myAdTitle').text()
 		props.price = removeUnnecessary($('.vip-title').find('.price').find('.value').text())
@@ -307,7 +271,7 @@ return new Promise((res,rej)=>{
 			var rue = searchStreet(props.title + " " + description)
 			// console.log(rue)
 			if(rue){
-				log(rue)
+				// log(rue)
 				props.street = rue;
 				delete props.lat;
 				delete props.lng;
@@ -358,6 +322,9 @@ return new Promise((res,rej)=>{
 })
 }
 
+// getStreets()
+// .then(update)
+
 function getGratka(url){
 return new Promise((res,rej)=>{
 	request(url, function (error, response, body) {
@@ -378,8 +345,11 @@ return new Promise((res,rej)=>{
 
 
 		var map = $("#adDetailInlineMap");
-		props.lat = parseFloat($(".latitude").text());
-		props.lng = parseFloat($(".longitude").text());
+		var jsonz = $("script[type='application/ld+json']")[2]
+		jsonz = JSON.parse(jsonz.children[0].data);
+		// log(jsonz.geo)
+		props.lat = parseFloat(jsonz.geo.latitude);
+		props.lng = parseFloat(jsonz.geo.longitude);
 
 		props.refreshed = Date.now();
 		d = new Date();
@@ -389,7 +359,7 @@ return new Promise((res,rej)=>{
 		props.date = (jour < 10 ? "0"+jour : jour ) + "/" + (mois < 10 ? "0"+mois : mois ) + "/" + annee;
 
 		log(id);
-
+		// log(props)
 		database.ref("smallz/"+id).update(props)
 		smalls[id] = props;
 		res();
@@ -421,7 +391,7 @@ return new Promise((res,rej)=>{
 		var rue = searchStreet(props.title + " " + description)
 			// console.log(rue)
 		if(rue){
-			log(rue)
+			// log(rue)
 			props.street = rue;
 		}
 
@@ -448,13 +418,13 @@ function fillStreets(){
 	centreville.forEach(s=>{
 		
 		if(i>1000) return false;
-		var notfound = "";
-		if(streets[streetKey(s)]){
-			notfound = streets[streetKey(s)].google
-		}
-		if(!streets[streetKey(s)] || notfound == "no"){
+
+		var rue = streets[streetKey(s)] || {};
+
+		if(!rue.lat && rue.google != "notfound"){
+			log(i)
 			i++;
-			log(streetKey(s))
+			// log(streetKey(s))
 			request(queryMapsUrl(s),function (error, response, body) {
 	 			if(!body) return true;
 				var body = JSON.parse(body);
@@ -467,6 +437,9 @@ function fillStreets(){
 					// obj[ streetKey(s) ] = body.results[0].geometry.location;
 					obj = body.results[0].geometry.location
 					database.ref('streets/'+streetKey(s)).update(obj)
+				} else if(body["error_message"] == "You have exceeded your daily request quota for this API.") {
+					log("Quota exceeded : ",streetKey(s))
+
 				} else {
 
 					log("Not found : ",streetKey(s))
@@ -474,6 +447,20 @@ function fillStreets(){
 				}
 			})
 			
+		}
+	})
+}
+
+// getStreets()
+// .then(fillStreets);
+
+
+function cleanStreets(){
+	centreville.forEach(s=>{
+		var rue = streets[streetKey(s)] || {};
+		if(rue.google == "notfound"){
+			log(streetKey(s))
+			// database.ref('streets/'+streetKey(s)).remove()
 		}
 	})
 }
@@ -507,6 +494,9 @@ return new Promise((resolve,reject)=>{
 		var flats = snapshot.val();
 		for(var id in flats){
 			if(Date.now() - flats[id].refreshed > 1000*3600*24*2){
+				log('removed '+id)
+				database.ref('smallz').child(id).remove();
+			} else if( !flats[id].refreshed ){
 				log('removed '+id)
 				database.ref('smallz').child(id).remove();
 			}
@@ -591,11 +581,13 @@ app.get('/remove', function(req, res) {
 
 app.get('/compress', function(req, res) {
 	res.send('Compressing the data');
-  	
+  	compress()
+  	.then(e=>{log("Finished compressing")})
   	
 
  
 });
+
 
 app.listen(app.get('port'), function () {
   console.log('Example app listening on port '+app.get('port'))

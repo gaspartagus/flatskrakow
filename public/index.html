@@ -5,8 +5,8 @@
 <title>Flats Krakow</title>
 
 <link rel="icon" type="image/png" href="map.png">
-<link rel="image_src" type="image/png" href="facebook.jpg">
-<meta name="description" content="A map of rooms, apartments and houses to rent in Krakow. Adverts from Gumtree, Gratka and Otodom."/>
+<link rel="image_src" type="image/png" href="facebook.png">
+<meta name="description" content="Mapa ogłoszeń o wynajmie pokojów, mieszkań i domów; ogłoszenia od Gumtree, OLX, Gratka i Otodom."/>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -19,7 +19,14 @@
 
 <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-4088122572203199",
+    enable_page_level_ads: true
+  });
+</script>
 
 </head>
 
@@ -58,6 +65,8 @@ riot.mount('*');
 <script src="firebase-database.js"></script>
 <!-- <script type="text/javascript" src="date.js"></script> -->
 <script language="javascript" src="lz-string.min.js"></script>
+
+<script src="retro.js"></script>
 
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG0dOVS_ZhMTnoprt3-pxQUVlpgalraqM&callback=initMap"></script>
 
@@ -173,7 +182,8 @@ function initMap() {
 	log("initMap")
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 14,
-		center: krakow
+		center: krakow,
+		styles: material
 	});
 	blueMarker = new google.maps.Marker({
 		position: krakow,
@@ -380,8 +390,13 @@ if(localStorage.user != "Gaspard"){
 
 
 setTimeout(t=>{
-	database.ref("users/"+user).update({ advert: $(".adsbygoogle").height() })	
-}, 10000)
+	database.ref("users/"+user).update({ advert: $(".adsbygoogle").height() })
+
+	if(! $(".adsbygoogle").height()){
+		window.climate = Math.floor(Math.random()*3) + 1;
+		riot.update()
+	}
+}, 7000)
 
 </script>
 

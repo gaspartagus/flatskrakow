@@ -134,12 +134,12 @@ menu {
 	box-sizing: border-box;
 	left: -24px;
 	position: relative;
-	border: 4px solid white;
+	/* border: 4px solid white; */
 }
 #adlink{
 	position: relative;
 	display: block;
-	z-index: 0;
+	z-index: 1;
 }
 #ad{
 	position: absolute;
@@ -180,6 +180,7 @@ label[for=today]{
 	text-align: right;
 	/* background-color: #EEEEEE; */
 	padding: 0.5rem;
+	z-index: 100000;
 }
 .langues div{
 	position: relative;
@@ -284,7 +285,7 @@ label[for=today]{
 	text-decoration: underline;
 }
 #lolz{position: relative;height: 160px;}
-#ggad{position: absolute;top: 0;left: -24px;z-index: 1;width: calc(100% + 48px);height: 159px;/* background-color: rgba(128, 45, 45, 0.82); */}
+#ggad{position: absolute;top: 0;left: -24px;z-index: 0;width: calc(100% + 48px);height: 159px;/* background-color: rgba(128, 45, 45, 0.82); */}
 
 
 
