@@ -335,7 +335,7 @@ function isFiltered(f){
 	var typ = (pokoje && mieszkania) || (pokoje && f.pk) || (mieszkania && !f.pk)
 	var rzm = (jdn && dwu) || (!f.jdn && !f.dwu) || (jdn && f.jdn) || (dwu && f.dwu)
 	
-	return f.pricenumber <= price && auj && websites[f.website] && typ;
+	return f.pricenumber <= price && auj && websites[f.website] && typ && rzm;
 }
 
 

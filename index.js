@@ -365,10 +365,15 @@ return new Promise((res,rej)=>{
 		props.price = removeUnnecessary($(".box-price-value").first().text())
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
 		// console.log(props.pricenumber)
-
-		props.jdn = $(".param_roomsize").text().search(/jednoosobowe|jednoosobowy/i) > -1;
-		props.dwu = $(".param_roomsize").text().search(/dwuosobowe|dwuosobowy|trzyosobowy i więcej/i) > -1;
-
+		var roomz = $(".param_roomsize");
+		if(roomz.length){
+			props.jdn = roomz.text().search(/jednoosobowe|jednoosobowy/i) > -1;
+			props.dwu = roomz.text().search(/dwuosobowe|dwuosobowy|trzyosobowy i więcej/i) > -1;
+		} else {
+			var texte = props.title + " " + $(".section-offer-text").text();
+			props.dwu = texte.search(/2-osobowy|2 osobowy|dwuosobowy|dwuosobowe|dla 2 os/i) > -1;
+			props.jdn = texte.search(/1-osobowy|1 osobowy|jednoosobowy|jednoosobowe|dla 1 os|jedynka|jedynkę/i) > -1;
+		}
 
 		var map = $("#adDetailInlineMap");
 		props.lat = parseFloat(map.attr("data-lat"));
@@ -418,7 +423,7 @@ return new Promise((res,rej)=>{
 
 
 		props.jdn = $(".pokoj").text().search(/dla jednej osoby/i) > -1;
-		props.dwu = $(".pokoj").text().search(/dla dwóch osób/i) > -1;
+		props.dwu = $(".pokoj").text().search(/dla dwóch osób|dla trzech osób/i) > -1;
 
 
 		var map = $("#adDetailInlineMap");
