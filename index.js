@@ -80,6 +80,17 @@ var olxUrl = [
 	"https://www.olx.pl/nieruchomosci/domy/wynajem/krakow/?search%5Bprivate_business%5D=private"
 ];
 
+var pokojeUrls = [
+	'https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/v1c9000l3200208p1?fr=ownr',
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-2/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-4/v1c9000l3200208p2?fr=ownr",
+	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-5/v1c9000l3200208p2?fr=ownr",
+	"https://www.otodom.pl/wynajem/pokoj/krakow/?search%5Bdescription%5D=1&search%5Bprivate_business%5D=private&search%5Bcreated_since%5D=3&search%5Bdist%5D=0&search%5Bsubregion_id%5D=410&search%5Bcity_id%5D=38&nrAdsPerPage=72",
+	"http://dom.gratka.pl/pokoje-do-wynajecia/lista/,krakow,3d,on,od,zi.html",
+	"https://www.olx.pl/nieruchomosci/stancje-pokoje/krakow/?search%5Bprivate_business%5D=private",
+]
+
 var streets = {};
 
 function getStreets(){
@@ -131,6 +142,10 @@ var krakow = {
 	lng: 19.9449799
 };
 
+// getStreets()
+// .then(update)
+// .then(compress)
+
 function searchStreet(description){
 
 	var rues = [];
@@ -143,7 +158,16 @@ function searchStreet(description){
 		if( short == undefined ) short = s;
 		if(short.length > 5) {
 
-			var index = description.search(short);
+			var index = description.search(new RegExp(short, "i"));
+
+			if(index <= 0 && short.indexOf("ska") > 0){
+				index = description.search(new RegExp(short.replace(/ska$/,"skiej"), "i"))
+				if(index>=0) { log(short.replace(/ska$/,"skiej")); }
+			}
+			if(index <= 0 && short.indexOf("ska") > 0){
+				index = description.search(new RegExp(short.replace(/kie$/,"kim"), "i"))
+				if(index>=0) { log(short.replace(/kie$/,"kim")) }
+			}
 
 			if (index > -1 ){
 				var obj = { index : index };
@@ -177,6 +201,8 @@ function isPosValid(p){
 }
 
 function getListAsync(urlz,website){
+var pkz = pokojeUrls.indexOf(urlz) > -1;
+log("Pokoje : " + pkz);
 return new Promise((resolve,reject) => {
 
 	request(urlz, function (error, response, body) {
@@ -189,7 +215,7 @@ return new Promise((resolve,reject) => {
 
 			var promesses = Array.from(links.map((i,e) => {
 				var url = rootUrl+e.attribs.href
-		 		return getGumtree(url)
+		 		return getGumtree(url, pkz)
 			}))
 			Promise.all(promesses)
 			.then(resolve)
@@ -201,7 +227,7 @@ return new Promise((resolve,reject) => {
 			var promesses = Array.from(links.map((i,e) => {
 				var url = $(e).attr("data-url")
 				var id = $(e).attr("data-item-id")
-		 		return getOtodom(url,id)
+		 		return getOtodom(url, pkz, id)
 			}))
 			Promise.all(promesses)
 			.then(resolve)
@@ -212,7 +238,7 @@ return new Promise((resolve,reject) => {
 
 			var promesses = Array.from(links.map((i,e) => {
 				var url = rootGratka + $(e).attr("href");
-		 		return getGratka(url)
+		 		return getGratka(url, pkz)
 			}))
 			Promise.all(promesses)
 			.then(resolve)
@@ -226,9 +252,9 @@ return new Promise((resolve,reject) => {
 
 				if(url.split(".")[1] == "otodom"){
 					var id = url.split("-ID")[1].split(".")[0];
-					return getOtodom(url,id)
+					return getOtodom(url, pkz, id)
 				} else {
-		 			return getOlx(url)
+		 			return getOlx(url, pkz)
 				}
 			}))
 			Promise.all(promesses)
@@ -239,7 +265,7 @@ return new Promise((resolve,reject) => {
 })
 }
 
-function getGumtree(url,website){
+function getGumtree(url,pkz){
 return new Promise((res,rej)=>{
 	request(url, function (error, response, body) {
 		$ = cheerio.load(body)
@@ -250,6 +276,7 @@ return new Promise((res,rej)=>{
 		props.id = id;
 		props.href = url;
 		props.website = "gumtree";
+		props.pk = pkz;
 
 		props.date = removeUnnecessary( $('.attribute .value').first().text() )
 		props.refreshed = Date.now();
@@ -259,6 +286,13 @@ return new Promise((res,rej)=>{
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
 
 		var description = removeUnnecessary($('.description').find('.pre').text())
+		var texte = props.title + " " + description;
+		var dwooo = texte.search(/2-osobowy|2 osobowy|dwuosobowy|dwuosobowe|dla 2 os/i) > -1;
+		var jednooo = texte.search(/1-osobowy|1 osobowy|jednoosobowy|jednoosobowe|dla 1 os|jedynka|jedynkę/i) > -1;
+		if(pkz && !jednooo && !dwooo) log(url);
+		if(!jednooo && !dwooo) jednooo = true;
+		props.dwu = dwooo;
+		props.jdn = jednooo;
 
 		if($('.google-maps-link').length){
 			var latlong = $('.google-maps-link').attr('data-uri').split("=")[1].split(",");
@@ -268,7 +302,7 @@ return new Promise((res,rej)=>{
 		}
 
 		if(! isPosValid(props)){
-			var rue = searchStreet(props.title + " " + description)
+			var rue = searchStreet(texte)
 			// console.log(rue)
 			if(rue){
 				// log(rue)
@@ -277,6 +311,7 @@ return new Promise((res,rej)=>{
 				delete props.lng;
 			}
 		}
+		// randomize(props)
 		log(id)
 		database.ref("smallz/"+id).update(props)
 		smalls[id] = props;
@@ -285,11 +320,37 @@ return new Promise((res,rej)=>{
 })
 }
 
+var propztgf = {
+	id: 7689767879387,
+	href: "http://oygiuhiljo;kroueiygtbvhlkrjn.km/lhtbekvjlrhki;lrv/bkhyulih;ilj/crhugyu",
+	website: "gumtree",
+	date: "98/34/3984",
+	refreshed: 148798908784,
+	title: "Rwfhlrbweygjwlkrebvlkehbl lwkegrblvkt lkrgh telg wtlh vlktb vlwbkt bvlwt4k gitv ecbvtkbhwekvjt",
+	price: 1300,
+	lat: 54.3454,
+	lng: 19.45353,
+	type: "mieszkanie",
+	ilosc: 2,
 
-function getOtodom(url,id){
+}
+
+
+
+
+
+function getOtodom(url,pkz,id){
 return new Promise((res,rej)=>{
 	request(url, function (error, response, body) {
-		$ = cheerio.load(body)
+		var $;
+		try {
+		   $ = cheerio.load(body)
+		}
+		catch (e) {
+		   log(body);
+		   res();
+		   return true;
+		}
 		var props = {};
 
 		// var id = url.split("/").pop();
@@ -297,12 +358,16 @@ return new Promise((res,rej)=>{
 		props.id = id;
 		props.href = url;
 		props.website = "otodom";
+		props.pk = pkz;
 
 		props.title = $('h1').first().text()
 		// log($(".box-price-value").first().text())
 		props.price = removeUnnecessary($(".box-price-value").first().text())
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
 		// console.log(props.pricenumber)
+
+		props.jdn = $(".param_roomsize").text().search(/jednoosobowe|jednoosobowy/i) > -1;
+		props.dwu = $(".param_roomsize").text().search(/dwuosobowe|dwuosobowy|trzyosobowy i więcej/i) > -1;
 
 
 		var map = $("#adDetailInlineMap");
@@ -311,6 +376,7 @@ return new Promise((res,rej)=>{
 
 		props.refreshed = Date.now();
 		props.date = $(".updated .right p:nth-child(2)").text().split(" ")[2].replace(/\./g,"/")
+		// randomize(props)
 
 		log(id);
 
@@ -322,13 +388,19 @@ return new Promise((res,rej)=>{
 })
 }
 
-// getStreets()
-// .then(update)
 
-function getGratka(url){
+function getGratka(url,pkz){
 return new Promise((res,rej)=>{
 	request(url, function (error, response, body) {
-		$ = cheerio.load(body)
+		var $;
+		try {
+		   $ = cheerio.load(body)
+		}
+		catch (e) {
+		   log(body);
+		   res();
+		   return true;
+		}
 		var props = {};
 
 		var id = url.split("-")[1];
@@ -336,12 +408,17 @@ return new Promise((res,rej)=>{
 		props.id = id;
 		props.href = url;
 		props.website = "gratka";
+		props.pk = pkz;
 
 		props.title = removeUnnecessary($('h1').first().text());
 		// log($(".box-price-value").first().text())
 		props.price = removeUnnecessary($(".cenaGlowna b").first().text()+" zł")
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
 		// console.log(props.pricenumber)
+
+
+		props.jdn = $(".pokoj").text().search(/dla jednej osoby/i) > -1;
+		props.dwu = $(".pokoj").text().search(/dla dwóch osób/i) > -1;
 
 
 		var map = $("#adDetailInlineMap");
@@ -357,6 +434,7 @@ return new Promise((res,rej)=>{
 		var mois = d.getMonth()+1;
 		var annee = d.getYear()+1900;
 		props.date = (jour < 10 ? "0"+jour : jour ) + "/" + (mois < 10 ? "0"+mois : mois ) + "/" + annee;
+		// randomize(props)
 
 		log(id);
 		// log(props)
@@ -368,10 +446,19 @@ return new Promise((res,rej)=>{
 })
 }
 
-function getOlx(url){
+function getOlx(url,pkz){
 return new Promise((res,rej)=>{
 	// log(url)
 	request(url, function (error, response, body) {
+		var $;
+		try {
+		   $ = cheerio.load(body)
+		}
+		catch (e) {
+		   log(body);
+		   res();
+		   return true;
+		}
 		$ = cheerio.load(body)
 		var props = {};
 
@@ -380,6 +467,7 @@ return new Promise((res,rej)=>{
 		props.id = id;
 		props.href = url;
 		props.website = "olx";
+		props.pk = pkz;
 
 		props.title = removeUnnecessary($('.offer-titlebox > h1').first().text());
 		var description = removeUnnecessary($('.descriptioncontent #textContent p').first().text());
@@ -387,6 +475,10 @@ return new Promise((res,rej)=>{
 		props.price = removeUnnecessary($(".price-label strong").first().text())
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
 		// console.log(props.pricenumber)
+
+
+		props.jdn = $(".descriptioncontent").text().search(/Jednoosobowy/i) > -1;
+		props.dwu = $(".descriptioncontent").text().search(/Dwuosobowy/i) > -1;
 
 		var rue = searchStreet(props.title + " " + description)
 			// console.log(rue)
@@ -402,6 +494,7 @@ return new Promise((res,rej)=>{
 		var mois = d.getMonth()+1;
 		var annee = d.getYear()+1900;
 		props.date = (jour < 10 ? "0"+jour : jour ) + "/" + (mois < 10 ? "0"+mois : mois ) + "/" + annee;
+		// randomize(props)
 
 		log(id);
 
@@ -507,7 +600,12 @@ return new Promise((resolve,reject)=>{
 })
 }
 
-
+function randomize(pr){
+	if(pr.lat){
+		pr.lat += 0.0001*2*(Math.random()-0.5)
+		pr.lng += 0.0001*2*(Math.random()-0.5)
+	}
+}
 function removeUnnecessary(t){
 	return t.replace(/\t/g,'').replace(/\n/g,'').replace(/ +/g,' ');
 }

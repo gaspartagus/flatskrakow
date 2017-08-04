@@ -1,0 +1,316 @@
+<raw>
+  <span></span>
+  this.root.innerHTML = opts.content
+</raw>
+
+<case>
+<p ref={ prop } class={ bouton: 1, black: val, white: !val } onclick={ filter }>
+  <input type="checkbox" checked={ val }>
+  { text }
+</p>
+
+<script>
+this.lang = window.lang;
+
+// console.log(opts)
+this.prop = opts.prop;
+var prop = this.prop;
+
+var init = localStorage[prop] || opts.init || true;
+this.val = JSON.parse(init)
+window[prop] = this.val;
+
+this.on("update",e=>{
+
+  this.text = textes[prop][lang] ? textes[prop][lang] : textes[prop].en;
+})
+
+filter(e){
+
+  this.val = !this.val;
+  if(websites.hasOwnProperty(prop)){
+    window.websites[prop] = this.val
+  }
+  window[prop] = this.val;
+  localStorage[prop] = this.val;
+  addRemove();
+}
+var textes = {
+  gumtree : {
+    en : "Gumtree",
+  },
+  olx : {
+    en : "OLX",
+  },
+  otodom : {
+    en : "Otodom",
+  },
+  gratka : {
+    en : "Gratka",
+  },
+  pokoje : {
+    en : "Rooms",
+    pl : "Pokoje",
+    fr : "Chambres",
+  },
+  mieszkania : {
+    en : "Flats",
+    pl : "Mieszkania",
+    fr : "Appartement",
+  },
+  dwu : {
+    en : "Shared room",
+    pl : "Dwuosobowy",
+    fr : "Chambre partagée",
+  },
+  jdn : {
+    en : "Single room",
+    pl : "Jednoosobowy",
+    fr : "",
+  },
+  today : {
+    en : "Show only the ads posted today",
+    pl : "Tylko ogłoszenia dodane dzisiaj",
+    fr : "Ne montrer que les annonces postées aujourd'hui",
+  },
+}
+this.text = textes[prop][lang] ? textes[prop][lang] : textes[prop].en;
+</script>
+</case>
+
+
+
+
+<menu>
+<div id="menu" class="card-panel">
+  <div class="ligne" onclick={ langues }>
+    <p>{ text1 }</p>
+    <langue/>
+  </div>
+
+  <div class="ligne input">
+    <p ref="priceline">{ text2 }
+      <input ref="price" type="number" name="price" onchange={ pricechange } step="50" value="{ price }">
+      <span>zł</span>
+    </p>
+  </div>
+
+  <div class="ligne">
+    <virtual data-is="case" prop="gumtree"/>
+    <virtual data-is="case" prop="olx"/>
+    <virtual data-is="case" prop="gratka"/>
+    <virtual data-is="case" prop="otodom"/>
+  </div>
+
+  <div class="ligne" onclick={ chambres }>
+    <virtual data-is="case" prop="pokoje"/>
+    <virtual data-is="case" prop="mieszkania"/>
+  </div>
+
+  <div class={ ligne:1, pasla: !rooms}>
+    <virtual data-is="case" prop="jdn"/>
+    <virtual data-is="case" prop="dwu"/>
+  </div>
+
+  <div class="ligne">
+    <virtual data-is="case" prop="today" init="false"/>
+  </div>
+
+  <div class="ligne">
+    <p>WIĘCEJ USTAWIENIA</p>
+  </div>
+  
+
+</div>
+
+<script>
+
+
+this.rooms = JSON.parse(localStorage.pokoje || true);
+// this.climate = Math.floor(Math.random()*3);
+
+filter(e){
+  var val = e.target.attributes.ref.value;
+  console.log(val)
+
+  this[val] = !this[val];
+  if(window.hasOwnProperty(val)){
+    window.websites[val] = this[val]
+  }
+  window[val] = this[val];
+  localStorage[val] = this[val];
+  addRemove();
+}
+
+chambres(e){
+  // log("yeah")
+  this.rooms = window.pokoje;
+}
+langues(e){
+  console.log("langues")
+  this.words()
+  this.update()
+}
+pricechange(e){
+  // console.log(this.refs.price)
+	window.price = this.refs.price.value || Infinity;
+  localStorage.price = window.price;
+  this.price = window.price;
+	console.log(this.refs.price.value)
+	addRemove();
+}
+
+activate(e){
+  this.activated = true
+}
+deactivate(e){
+  if(! (this.refs.price.value > 0))
+  this.activated = false;
+}
+
+filterToday(e){
+	window.today = e.target.checked;
+  localStorage.today = e.target.checked;
+  // console.log(e.target.checked)
+	addRemove();
+}
+filterWebsites(e){
+  window.websites[e.target.id] = e.target.checked;
+  localStorage[e.target.id] = e.target.checked;
+  // console.log(window.websites)
+  addRemove();
+
+}
+
+this.ln = lang;
+this.price = parseInt(localStorage.price || "");
+this.today = JSON.parse(localStorage.today || false);
+this.gumtree = JSON.parse(localStorage.gumtree || true);
+this.gratka = JSON.parse(localStorage.gratka || true);
+this.otodom = JSON.parse(localStorage.otodom || true);
+this.olx = JSON.parse(localStorage.olx || true);
+
+window.price = this.price || Infinity;
+this.activated = this.price || 0;
+
+window.today = this.today;
+window.websites = {
+  gumtree : this.gumtree,
+  otodom: this.otodom,
+  gratka: this.gratka,
+  olx: this.olx
+};
+
+this.on('update', function() {
+  // console.log("lol too")
+  this.words
+})
+
+
+// this.on('mount', function(){
+
+//   if(!this.gumtree)
+//   this.refs.gumtree.removeAttribute("checked")
+//   if(!this.gratka)
+//   this.refs.gratka.removeAttribute("checked")
+//   if(!this.otodom)
+//   this.refs.otodom.removeAttribute("checked")
+//   if(!this.olx)
+//   this.refs.olx.removeAttribute("checked")
+//   if(!this.today)
+//   this.refs.today.removeAttribute("checked")
+//   if(this.price)
+//   this.refs.pricelabel.className += " active";
+// })
+
+var text = {
+  text1 : {
+    en : "SETTINGS",
+    pl : "USTAWIENIA",
+    fr : "PARAMÈTRES",
+  },
+  text2 : {
+    en : "Maximum price (zł)",
+    pl : "Cena maksymalna",
+    fr : "Prix maximum",
+  },
+  text10 : {
+    en : "Gumtree offers",
+    pl : "Oferty z Gumtree",
+    fr : "Offres de Gumtree.pl",
+  },
+  text28 : {
+    en : "A map of the gumtree adverts for rooms, appartments and houses to rent <b>directly by owners</b> in Krakow",
+    pl : "Mapa ogłoszeń Gumtree o wynajmie pokojów, mieszkań i domów; ogłoszenia <b>od właściciela</b>.",
+    fr : "Une carte des annonces Gumtree.pl (propriétaires uniquement) des chambres et appartements à louer à Cracovie",
+  },
+  text3 : {
+    en : "Color legend",
+    pl : "Legenda",
+    fr : "Légende",
+  },
+  text4 : {
+    en : "Position given by the owner",
+    pl : "Pozycja podana przez właściciela",
+    fr : "Adresse donnée par le propriétaire",
+  },
+  text5 : {
+    en : "Position guessed from the street name in the title or the description of the advert (sometimes inaccurate)",
+    pl : "Pozycja ustalona na podstawie nazwy ulicy w tytule lub treści ogłoszenia (czasami niedokładna)",
+    fr : "Position devinée avec les noms de rues dans le titre ou le texte de l'annonce (parfois imprécis)",
+  },
+  text6 : {
+    en : "All other un-located adverts",
+    pl : "Pozostałe, niezlokalizowane ogłoszenia",
+    fr : "Toutes les autres annonces non localisées",
+  },
+  text9 : {
+    en : "Show only the ads posted today",
+    pl : "Tylko ogłoszenia dodane dzisiaj",
+    fr : "Ne montrer que les annonces postées aujourd'hui",
+  },
+  text11 : {
+    en : "ADVERT",
+    pl : "OGŁOSZENIE",
+    fr : "ANNONCE",
+  },
+  text : {
+    en : "",
+    pl : "",
+    fr : "",
+  }
+}
+
+
+this.words = function(){
+  for (var k in text) {
+    this[k] = text[k][lang] ? text[k][lang] : text[k].en;
+  }
+}
+
+this.words();
+
+// this.on("update",e=>{
+
+//   this.words();
+// 	console.log("updating")
+//   riot.mount('raw')
+// })
+
+save(){
+  saveClick({ id: "climatelab"});
+}
+
+function updateScroll(){
+    var element = document.getElementById("menu");
+    element.scrollTop = element.scrollHeight;
+}
+
+setTimeout(updateScroll,5000)
+
+
+</script>
+
+
+
+</menu>
