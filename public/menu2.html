@@ -66,7 +66,7 @@ var textes = {
   jdn : {
     en : "Single room",
     pl : "Jednoosobowy",
-    fr : "",
+    fr : "Chambre individuelle",
   },
   today : {
     en : "Show only the ads posted today",
@@ -84,7 +84,7 @@ this.text = textes[prop][lang] ? textes[prop][lang] : textes[prop].en;
 <menu>
 <div id="menu" class="card-panel">
   <div class="ligne" onclick={ langues }>
-    <p>{ text1 }</p>
+    <p>FLATS KRAKÓW</p>
     <langue/>
   </div>
 
@@ -116,8 +116,12 @@ this.text = textes[prop][lang] ? textes[prop][lang] : textes[prop].en;
     <virtual data-is="case" prop="today" init="false"/>
   </div>
 
-  <div class="ligne">
-    <p>WIĘCEJ USTAWIENIA</p>
+  <div class="thankme">
+    <p>
+      { text5 } :<br>
+      -  { text6 } : <a href="https://climate-lab.eu" target="_blank">climate-lab.eu</a> { text7 }<br>
+      -  { text8 } (<a href="mailto:gaspard.benoit.z@gmail.com" target="_blank">{ text9 }</a>)
+    </p>
   </div>
   
 
@@ -207,22 +211,6 @@ this.on('update', function() {
 })
 
 
-// this.on('mount', function(){
-
-//   if(!this.gumtree)
-//   this.refs.gumtree.removeAttribute("checked")
-//   if(!this.gratka)
-//   this.refs.gratka.removeAttribute("checked")
-//   if(!this.otodom)
-//   this.refs.otodom.removeAttribute("checked")
-//   if(!this.olx)
-//   this.refs.olx.removeAttribute("checked")
-//   if(!this.today)
-//   this.refs.today.removeAttribute("checked")
-//   if(this.price)
-//   this.refs.pricelabel.className += " active";
-// })
-
 var text = {
   text1 : {
     en : "SETTINGS",
@@ -269,17 +257,44 @@ var text = {
     pl : "Tylko ogłoszenia dodane dzisiaj",
     fr : "Ne montrer que les annonces postées aujourd'hui",
   },
-  text11 : {
-    en : "ADVERT",
-    pl : "OGŁOSZENIE",
-    fr : "ANNONCE",
+  text5 : {
+    en : "If this service helped you finding your flat, and you wish to thank the author for that, please consider",
+    pl : "Jeśli ta usługa pomogła ci znaleźć mieszkanie i chciałbyś podziękować autorowi, proszę rozważyć",
+    fr : "Si ce service vous a aidé à trouver votre nouvel appartement, et que vous souhaitez en remercier l'auteur, envisagez de",
+  },
+  text6 : {
+    en : "Reading this webpage",
+    pl : "przeczytać tę stronę internetową",
+    fr : "lire cette page web",
+  },
+  text7 : {
+    en : "from A to Z and learn about climate change",
+    pl : "od A do Ż i nauczyć się o zmianie klimatu",
+    fr : "de A à Z et vous instruire sur le changement climatique",
+  },
+  text8 : {
+    en : "Buying me a latte in Stolarska",
+    pl : "kupić mi latte w Stolarskiej",
+    fr : "M'offrir un latte au café Stolarska",
+  },
+  text9 : {
+    en : "my email",
+    pl : "mój e-mail",
+    fr : "mon email",
+  },
+  text10 : {
+    en : "",
+    pl : "",
+    fr : "",
   },
   text : {
     en : "",
     pl : "",
     fr : "",
-  }
+  },
 }
+
+
 
 
 this.words = function(){

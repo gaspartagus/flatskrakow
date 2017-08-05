@@ -17,7 +17,7 @@
 
 <link href="style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
-<!-- <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet"> -->
+<link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
 <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
 
 
@@ -34,6 +34,7 @@
 <body>
 
 <!-- <accueil></accueil> -->
+<legende></legende>
 
 
 <menu></menu>
@@ -130,7 +131,7 @@ function downloadFlats(){
 
 function downloadSmalls(){
 	
-	database.ref('compressed').once('value').then(function(snapshot) {
+	database.ref('compressed').on('value', function(snapshot) {
 		log("small arrived")
 		var v = snapshot.val();
 		var zstr = v.smallz;

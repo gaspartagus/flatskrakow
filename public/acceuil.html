@@ -1,5 +1,6 @@
-<accueil>
 
+
+<accueil>
 
 <div if={ !started } id="accueil">
 	
@@ -13,9 +14,9 @@
 			<h1>FLATS KRAKOW</h1>
 			<p><raw content={ text2 }/></p>
 		</div>
-		<div class="ligne" id="ligne1"><p>{ text3 }</p></div>
-		<div class="ligne" id="ligne2"><p>{ text4 }</p></div>
-		<div class="ligne" id="ligne3"><p>{ text5 }</p></div>
+		<div class="rang" id="rang1"><p>{ text3 }</p></div>
+		<div class="rang" id="rang2"><p>{ text4 }</p></div>
+		<div class="rang" id="rang3"><p>{ text5 }</p></div>
 		<div id="start" onclick={ start }>{ text6 }</div>
 		
 	</div>
@@ -71,7 +72,7 @@ var text = {
     en : "",
     pl : "",
     fr : "",
-  }
+  },
 }
 
 
@@ -88,19 +89,95 @@ this.on("update",e=>{
 	console.log("updating")
 	riot.mount('raw')
 })
+</script>
+</accueil>
 
 
+<legende>
+
+<div if={ !started } class="card-panel">
+  <!-- <langue/> -->
+  <div id="legende">
+    <h3 class="title">{ text3 }</h3>
+    <p>
+      <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png">{ text4 }<br>
+      <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png">{ text5 }<br>
+      <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png">{ text6 }<br>
+    </p>
+    <span id="fermer" onclick={ close }>{ text7 }</span>
+  </div>
+</div>
+<script>
+
+this.started = false;
+// if(localStorage.legende)
+  // this.started = !JSON.parse(localStorage.legende)
+
+start(e){
+  this.started = true;
+  // console.log(e)
+}
+close(e){
+  this.started = true;
+  localStorage.legende = false;
+}
 
 
+this.on('mount', function(){
+})
+
+var text = {
+  text3 : {
+    en : "Color legend",
+    pl : "Legenda",
+    fr : "Légende",
+  },
+  text4 : {
+    en : "Position given by the owner",
+    pl : "Pozycja podana przez właściciela",
+    fr : "Adresse donnée par le propriétaire",
+  },
+  text5 : {
+    en : "Position guessed from the street name in the title or the description of the advert (sometimes inaccurate)",
+    pl : "Pozycja ustalona na podstawie nazwy ulicy w tytule lub treści ogłoszenia (czasami niedokładna)",
+    fr : "Position devinée avec les noms de rues dans le titre ou le texte de l'annonce (parfois imprécis)",
+  },
+  text6 : {
+    en : "All other un-located adverts",
+    pl : "Pozostałe, niezlokalizowane ogłoszenia",
+    fr : "Toutes les autres annonces non localisées",
+  },
+  text7 : {
+    en : "CLOSE",
+    pl : "ZAMKNĄĆ",
+    fr : "FERMER",
+  },
+  text : {
+    en : "",
+    pl : "",
+    fr : "",
+  },
+}
+
+
+this.words = function(){
+  for (var k in text) {
+    this[k] = text[k][lang] ? text[k][lang] : text[k].en;
+  }
+}
+
+this.words();
+
+this.on("update",e=>{
+  this.words();
+  console.log("updating")
+  riot.mount('raw')
+})
 </script>
 
 
 
-
-
-
-
-</accueil>
+</legende>
 
 
 
