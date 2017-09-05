@@ -33,6 +33,7 @@ database = firebase.database();
 var request = require('request');
 const cheerio = require('cheerio')
 var lzstring = require("lz-string");
+const nodemailer = require('nodemailer');
 
 var log = console.log;
 
@@ -710,6 +711,38 @@ app.get('/compress', function(req, res) {
 app.listen(app.get('port'), function () {
   console.log('Example app listening on port '+app.get('port'))
 })
+
+
+
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'flatzkrakow@gmail.com',
+    pass: 'jennypieski'
+  }
+});
+process.on('uncaughtException', function(err) {
+    // handle the error safely
+    console.log("blablabla ",err)
+
+    var mailOptions = {
+		from: 'flatzkrakow@gmail.com',
+		to: 'gaspard.benoit.z@gmail.com',
+		subject: 'Another flying bug in this place, says Jenny the dog',
+		text: err+""
+	};
+
+	transporter.sendMail(mailOptions, function(erreur, info){
+		log("Sending an email")
+		if (erreur) {
+		console.log("Error sending an email : ",erreur);
+		} else {
+		console.log('Email sent: ' + info.response);
+		}
+	});
+})
+
 
 
 
