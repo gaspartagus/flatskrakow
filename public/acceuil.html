@@ -110,8 +110,8 @@ this.on("update",e=>{
 <script>
 
 this.started = false;
-// if(localStorage.legende)
-  // this.started = !JSON.parse(localStorage.legende)
+if(localStorage.legende)
+  this.started = !JSON.parse(localStorage.legende)
 
 start(e){
   this.started = true;
@@ -149,7 +149,7 @@ var text = {
   },
   text7 : {
     en : "CLOSE",
-    pl : "ZAMKNĄĆ",
+    pl : "ZAMKNIJ",
     fr : "FERMER",
   },
   text : {

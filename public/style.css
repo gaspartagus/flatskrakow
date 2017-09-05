@@ -44,6 +44,12 @@ html{
 	background-position: 50% 50%;
 	background-size: 100%;
 }
+@media screen and (max-width: 600px) {
+#krakow img{
+	top: 100px;
+	left: calc(50% - 412px);
+}
+}
 #contenu{
 	z-index: 100000;
 	color: white;
@@ -91,6 +97,17 @@ html{
 	font-size: 1.5rem;
 	cursor: pointer;
 }
+@media screen and (max-width: 600px) {
+#accueil{
+	left: 0;
+	width: 100%;
+	top: 0;
+}
+#start{
+	left: 15%;
+}
+}
+
 
 #menu{
 	position: absolute;
@@ -131,7 +148,7 @@ menu {
 	position: relative;
 }
 #legende{
-	display: none;
+	/* display: none; */
 }
 .settings > .row{
 	margin-bottom: 0;
@@ -406,7 +423,18 @@ label[for=today]{
 #fermer:hover{
 	background-color: gainsboro;
 }
+@media screen and (max-width: 600px) {
+legende .card-panel{
+	left: 0;
+	position: relative;
+	width: 100%;
+	/* padding: 3rem; */
+	box-sizing: border-box;
+}
 
+
+
+}
 
 
 

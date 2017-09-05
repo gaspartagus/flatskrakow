@@ -429,9 +429,20 @@ return new Promise((res,rej)=>{
 		var map = $("#adDetailInlineMap");
 		var jsonz = $("script[type='application/ld+json']")[2]
 		jsonz = JSON.parse(jsonz.children[0].data);
-		// log(jsonz.geo)
-		props.lat = parseFloat(jsonz.geo.latitude);
-		props.lng = parseFloat(jsonz.geo.longitude);
+		if(jsonz.geo){
+			// log(jsonz.geo)
+			props.lat = parseFloat(jsonz.geo.latitude);
+			props.lng = parseFloat(jsonz.geo.longitude);
+		} else if(jsonz.address) {
+			if(jsonz.address.streetAddress){
+				var rue = searchStreet(jsonz.address.streetAddress)
+				// console.log(rue)
+				if(rue){
+					// log(rue)
+					props.street = rue;
+				}
+			}
+		}
 
 		props.refreshed = Date.now();
 		d = new Date();
@@ -667,6 +678,10 @@ app.get('/update', function(req, res) {
 			.then(e=>{
 				log("Hourra !")
 			})
+			setTimeout(e=>{
+				compress();
+				log("Compressing anyway")
+			},120000)
 		}
 		else {
 			res.send('Updated less than half an hour ago');
