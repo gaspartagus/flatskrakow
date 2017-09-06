@@ -268,7 +268,7 @@ return new Promise((resolve,reject) => {
 
 function getGumtree(url,pkz){
 return new Promise((res,rej)=>{
-	request(url.split("?")[0], function (error, response, body) {
+	request(url, function (error, response, body) {
 		$ = cheerio.load(body)
 		var props = {};
 
@@ -343,7 +343,7 @@ var propztgf = {
 
 function getOtodom(url,pkz,id){
 return new Promise((res,rej)=>{
-	request(url, function (error, response, body) {
+	request(url.split("?")[0], function (error, response, body) {
 		var $;
 		try {
 		   $ = cheerio.load(body)
