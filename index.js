@@ -724,13 +724,14 @@ var transporter = nodemailer.createTransport({
 });
 process.on('uncaughtException', function(err) {
     // handle the error safely
-    console.log("blablabla ",err)
+    console.log("blablabla ",err.stack+"")
 
     var mailOptions = {
+    	name: "Flats Kraków",
 		from: 'flatzkrakow@gmail.com',
 		to: 'gaspard.benoit.z@gmail.com',
 		subject: 'Another flying bug in this place, says Jenny the dog',
-		text: err+""
+		text: err.stack+""
 	};
 
 	transporter.sendMail(mailOptions, function(erreur, info){
@@ -742,8 +743,5 @@ process.on('uncaughtException', function(err) {
 		}
 	});
 })
-
-
-
 
 
