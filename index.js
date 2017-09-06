@@ -356,6 +356,7 @@ return new Promise((res,rej)=>{
 		var props = {};
 
 		// var id = url.split("/").pop();
+		try{
 
 		props.id = id;
 		props.href = url;
@@ -390,6 +391,11 @@ return new Promise((res,rej)=>{
 		database.ref("smallz/"+id).update(props)
 		database.ref("bigz/"+id).update(props)
 		smalls[id] = props;
+
+
+		} catch(e) {
+			mail(props)
+		}
 		res();
 
 	})
@@ -729,13 +735,33 @@ var transporter = nodemailer.createTransport({
 process.on('uncaughtException', function(err) {
     // handle the error safely
     console.log("blablabla ",err.stack+"")
+    mail(err.stack+"")
+ //    var mailOptions = {
+ //    	name: "Flats Kraków",
+	// 	from: 'flatzkrakow@gmail.com',
+	// 	to: 'gaspard.benoit.z@gmail.com',
+	// 	subject: 'Another flying bug in this place, says Jenny the dog',
+	// 	text: err.stack+""
+	// };
 
-    var mailOptions = {
+	// transporter.sendMail(mailOptions, function(erreur, info){
+	// 	log("Sending an email")
+	// 	if (erreur) {
+	// 	console.log("Error sending an email : ",erreur);
+	// 	} else {
+	// 	console.log('Email sent: ' + info.response);
+	// 	}
+	// });
+})
+
+function mail(obj){
+	
+	var mailOptions = {
     	name: "Flats Kraków",
 		from: 'flatzkrakow@gmail.com',
 		to: 'gaspard.benoit.z@gmail.com',
 		subject: 'Another flying bug in this place, says Jenny the dog',
-		text: err.stack+""
+		text: JSON.stringify(obj)
 	};
 
 	transporter.sendMail(mailOptions, function(erreur, info){
@@ -746,6 +772,6 @@ process.on('uncaughtException', function(err) {
 		console.log('Email sent: ' + info.response);
 		}
 	});
-})
+}
 
 
