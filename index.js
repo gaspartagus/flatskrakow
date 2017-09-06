@@ -315,6 +315,7 @@ return new Promise((res,rej)=>{
 		// randomize(props)
 		log(id)
 		database.ref("smallz/"+id).update(props)
+		database.ref("bigz/"+id).update(props)
 		smalls[id] = props;
 		res();
 	})
@@ -387,6 +388,7 @@ return new Promise((res,rej)=>{
 		log(id);
 
 		database.ref("smallz/"+id).update(props)
+		database.ref("bigz/"+id).update(props)
 		smalls[id] = props;
 		res();
 
@@ -456,6 +458,7 @@ return new Promise((res,rej)=>{
 		log(id);
 		// log(props)
 		database.ref("smallz/"+id).update(props)
+		database.ref("bigz/"+id).update(props)
 		smalls[id] = props;
 		res();
 
@@ -516,6 +519,7 @@ return new Promise((res,rej)=>{
 		log(id);
 
 		database.ref("smallz/"+id).update(props)
+		database.ref("bigz/"+id).update(props)
 		smalls[id] = props;
 		res();
 
