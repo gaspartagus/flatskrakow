@@ -1,0 +1,31 @@
+[debug] [2017-09-11T08:50:37.392Z] ----------------------------------------------------------------------
+[debug] [2017-09-11T08:50:37.395Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
+[debug] [2017-09-11T08:50:37.399Z] CLI Version:   3.9.2
+[debug] [2017-09-11T08:50:37.399Z] Platform:      darwin
+[debug] [2017-09-11T08:50:37.399Z] Node Version:  v6.10.3
+[debug] [2017-09-11T08:50:37.400Z] Time:          Mon Sep 11 2017 10:50:37 GMT+0200 (CEST)
+[debug] [2017-09-11T08:50:37.400Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2017-09-11T08:50:37.413Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2017-09-11T08:50:37.414Z] > authorizing via signed-in user
+[debug] [2017-09-11T08:50:37.416Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2017-09-11T08:50:37.416Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token { refresh_token: '1/_LlNHVbzzSKdsGas5v8D_8LL7ZOpY_SsYlvxEyYTSMI',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Mon Sep 11 2017 10:50:37 GMT+0200 (CEST)
+[debug] [2017-09-11T08:50:37.808Z] <<< HTTP RESPONSE 200
+[debug] [2017-09-11T08:50:37.811Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/gumtree-on-a-map  
+ Mon Sep 11 2017 10:50:37 GMT+0200 (CEST)
+[debug] [2017-09-11T08:50:38.723Z] <<< HTTP RESPONSE 200
+[debug] [2017-09-11T08:50:38.725Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/gumtree-on-a-map/tokens  
+ Mon Sep 11 2017 10:50:38 GMT+0200 (CEST)
+[debug] [2017-09-11T08:50:39.764Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'gumtree-on-a-map'...
+[info] 
+[info] i  deploying hosting
+[info] i  hosting: preparing public directory for upload...
+[debug] [2017-09-11T08:50:41.642Z] >>> HTTP REQUEST PUT https://deploy.firebase.com/v1/hosting/gumtree-on-a-map/uploads/-Ktk7XmpBYuk1zB9lJWk?fileCount=24&message=  
+ Mon Sep 11 2017 10:50:41 GMT+0200 (CEST)

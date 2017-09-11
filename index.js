@@ -44,6 +44,7 @@ var rootUrl = "https://www.gumtree.pl";
 var rootGratka = "http://dom.gratka.pl";
 
 var gumtreeUrls = [
+	// 'https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/v1c9000l3200208p1',
 	'https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/v1c9000l3200208p1?fr=ownr',
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-2/v1c9000l3200208p2?fr=ownr",
 	"https://www.gumtree.pl/s-pokoje-do-wynajecia/krakow/page-3/v1c9000l3200208p2?fr=ownr",
@@ -364,6 +365,11 @@ return new Promise((res,rej)=>{
 		props.pk = pkz;
 
 		props.title = $('h1').first().text()
+
+		if(props.title == "Access Denied"){
+		   res();
+		   return true;			
+		}
 		// log($(".box-price-value").first().text())
 		props.price = removeUnnecessary($(".box-price-value").first().text())
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
@@ -690,7 +696,8 @@ app.get('/update', function(req, res) {
 				log("Hourra !")
 			})
 			setTimeout(e=>{
-				compress();
+				removeOld()
+				.then(compress);
 				log("Compressing anyway")
 			},120000)
 		}

@@ -138,6 +138,7 @@ function downloadSmalls(){
 		if(map){
 			addMarkers();
 			addDialogs();
+			openId();
 		}
 		// log(zstr,LZString.decompress(LZString.compress("srkjghalkhg.kwalufhsawlriuskdghjk.fe")))
 	});
@@ -166,6 +167,7 @@ function saveFlats(fl){
 		}
 		// console.log(fl[i])
 	}
+	addId();
 }
 
 database.ref("lastupdate").on('value', function(snapshot) {
@@ -194,6 +196,7 @@ function initMap() {
 	if(flats.length){
 		addMarkers();
 		addDialogs();
+		openId();
 	}
 }
 var openDialog;
@@ -203,44 +206,44 @@ function addDialogs(){
 
 	flats.forEach(f => {
 
-		if( isFiltered(f)){
-			if(f.marker){
-				if(f.infowindow){
-					f.infowindow.setContent( textwind(f) )
-				} else {
-					f.infowindow = new google.maps.InfoWindow({
-						content: textwind(f)
-					});
-							
-					f.marker.addListener('click', function() {
-						// log("Just clicked a dot")
-						if(openDialog == f.infowindow){
-							f.infowindow.close();
-							openDialog = "";
-							return true;
-						}
-						f.infowindow.open(map, f.marker);
-						if(openDialog){
-							openDialog.close();
-						}
-						openDialog = f.infowindow;
-						if(!f.clickevent){
-							f.clickevent = true;
-							$("#"+f.id).on("click",e=>{log("lol tu m'as vu "+f.id); saveClick(f)})
-						}
-						// log(f)
-						// saveClick(f);
-					});
-
-					f.infowindow.addListener('closeclick', function(){
-						openDialog = "";
-					})
-				}
-	
+		// if( isFiltered(f)){
+		if(f.marker){
+			if(f.infowindow){
+				f.infowindow.setContent( textwind(f) )
 			} else {
-				bezText = bezText + textwind(f);
+				f.infowindow = new google.maps.InfoWindow({
+					content: textwind(f)
+				});
+						
+				f.marker.addListener('click', function() {
+					// log("Just clicked a dot")
+					if(openDialog == f.infowindow){
+						f.infowindow.close();
+						openDialog = "";
+						return true;
+					}
+					f.infowindow.open(map, f.marker);
+					if(openDialog){
+						openDialog.close();
+					}
+					openDialog = f.infowindow;
+					if(!f.clickevent){
+						f.clickevent = true;
+						$("#"+f.id).on("click",e=>{log("lol tu m'as vu "+f.id); saveClick(f)})
+					}
+					// log(f)
+					// saveClick(f);
+				});
+
+				f.infowindow.addListener('closeclick', function(){
+					openDialog = "";
+				})
 			}
+
+		} else {
+			bezText = bezText + textwind(f);
 		}
+		// }
 	})
 
 	if(blueInfoWindow){
@@ -329,8 +332,9 @@ function isFiltered(f){
 	var auj = today ? f.today : true;
 	var typ = (pokoje && mieszkania) || (pokoje && f.pk) || (mieszkania && !f.pk)
 	var rzm = (jdn && dwu) || (!f.jdn && !f.dwu) || (jdn && f.jdn) || (dwu && f.dwu)
+	var prszktk = f.price !== "Proszę o kontakt";
 	
-	return f.pricenumber <= price && auj && websites[f.website] && typ && rzm;
+	return f.pricenumber <= price && auj && websites[f.website] && typ && rzm && prszktk;
 }
 
 
@@ -380,30 +384,61 @@ if(location.hostname == "localhost") {
 }
 
 // tracking users once
-if(localStorage.user != "Gaspard"){
-    var obj = {}
-    var d = new Date(),
-        mois = d.getMonth()+1,
-        jour = d.getDate(),
-        heure = d.getHours(),
-        minute = d.getMinutes(),
-        seconde = d.getSeconds();
+// if(localStorage.user != "Gaspard"){
+//     var obj = {}
+//     var d = new Date(),
+//         mois = d.getMonth()+1,
+//         jour = d.getDate(),
+//         heure = d.getHours(),
+//         minute = d.getMinutes(),
+//         seconde = d.getSeconds();
 
-    var text = ( mois<10?"0"+mois:mois )+"-"+( jour<10?"0"+jour:jour )+" "+( heure<10?"0"+heure:heure )+":"+( minute<10?"0"+minute:minute )+":"+( seconde<10?"0"+seconde:seconde );
+//     var text = ( mois<10?"0"+mois:mois )+"-"+( jour<10?"0"+jour:jour )+" "+( heure<10?"0"+heure:heure )+":"+( minute<10?"0"+minute:minute )+":"+( seconde<10?"0"+seconde:seconde );
     
-    obj[text] = localStorage.user + " " + lang + " from "+navigator.language;
-    database.ref("pings").update(obj)
+//     obj[text] = localStorage.user + " " + lang + " from "+navigator.language;
+//     database.ref("pings").update(obj)
+// }
+
+function openId(){
+	var ID = "1002094135290911024078509";
+	var ouvert = false;
+	flats.forEach(f=>{
+		if(f.id == ID){
+			f.infowindow.open(map, f.marker);
+			ouvert = true;
+		}
+	})
 }
-
-
-setTimeout(t=>{
-	database.ref("users/"+user).update({ advert: $(".adsbygoogle").height() })
-
-	if(! $(".adsbygoogle").height()){
-		window.climate = Math.floor(Math.random()*3) + 1;
-		// riot.update()
+function addId(){
+	var ID = "1002094135290911024078509";
+	var present = false;
+	flats.forEach(f=>{
+		if(f.id == ID){
+			// console.log(f,Date.now())
+			f.today = true;
+			f.refreshed = Date.now();
+			present = true;
+		}
+	})
+	if(!present){
+	flats.push({
+		"date" : "09/09/2017",
+		"dwu" : true,
+		"href" : "https://www.gumtree.pl/a-pokoje-do-wynajecia/krakow/bez-prowizji-eng-below-2+osobowy-pok%C3%B3j-przy-zyblikiewicza-+-stare-misto/1002094135290911024078509",
+		"id" : "1002094135290911024078509",
+		"jdn" : false,
+		"lat" : 50.0597947,
+		"lng" : 19.94536149999999,
+		"pk" : false,
+		"price" : "500 zł",
+		"pricenumber" : 500,
+		"refreshed" : Date.now(),
+		"title" : "(BEZ PROWIZJI)(ENG BELOW) 2-osobowy Pokój przy Zyblikiewicza - Stare Miasto",
+		"website" : "gumtree",
+		"today" : true
+	})
 	}
-}, 7000)
+}
 
 </script>
 
