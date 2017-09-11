@@ -366,13 +366,15 @@ return new Promise((res,rej)=>{
 
 		props.title = $('h1').first().text()
 
-		if(props.title == "Access Denied"){
-		   res();
-		   return true;			
-		}
 		// log($(".box-price-value").first().text())
 		props.price = removeUnnecessary($(".box-price-value").first().text())
 		props.pricenumber = parseInt(props.price.replace(/ | |zł/g,"")) || 0
+
+		if(props.title == "Access Denied" || props.pricenumber == 0){
+		   res();
+		   return true;			
+		}
+
 		// console.log(props.pricenumber)
 		var roomz = $(".param_roomsize");
 		if(roomz.length){
