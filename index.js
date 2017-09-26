@@ -37,6 +37,8 @@ const nodemailer = require('nodemailer');
 
 var log = console.log;
 
+var debugvariable = {};
+
 
 
 
@@ -204,16 +206,15 @@ function isPosValid(p){
 
 function getListAsync(urlz,website){
 var pkz = pokojeUrls.indexOf(urlz) > -1;
+debugvariable = urlz;
 log("Pokoje : " + pkz);
 return new Promise((resolve,reject) => {
 
 	request(urlz, function (error, response, body) {
 		// log(error,response,body)
-		try{
-			const $ = cheerio.load(body)
-		} catch(e){
-			mail(urlz + "  hmmm  " +JSON.stringify(e))
-		}
+		
+		const $ = cheerio.load(body)
+
 
 		if(website == "gumtree"){
 
@@ -686,7 +687,7 @@ app.get('/update', function(req, res) {
 		var lastupdate = snapshot.val().timestamp;
 		// console.log(Date.now(),lastupdate,Date.now()-lastupdate)
 		// update()
-		if(Date.now() - lastupdate > 3600*1000/2){
+		if(Date.now() - lastupdate > 3600*1000/2 || app.get('port') == 5000){
 			res.send('Update started');
 
 			firebase.database().ref('/lastupdate/').update({
@@ -786,8 +787,9 @@ function mail(obj){
 		from: 'flatzkrakow@gmail.com',
 		to: 'gaspard.benoit.z@gmail.com',
 		subject: 'Another flying bug in this place, says Jenny the dog',
-		text: JSON.stringify(obj)
+		text: JSON.stringify(obj) + "  hmmm  " + debugvariable
 	};
+	if(app.get("port") == 5000) return true;
 
 	transporter.sendMail(mailOptions, function(erreur, info){
 		log("Sending an email")
