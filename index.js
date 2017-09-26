@@ -209,7 +209,11 @@ return new Promise((resolve,reject) => {
 
 	request(urlz, function (error, response, body) {
 		// log(error,response,body)
-		const $ = cheerio.load(body)
+		try{
+			const $ = cheerio.load(body)
+		} catch(e){
+			mail(urlz + "  hmmm  " +JSON.stringify(e))
+		}
 
 		if(website == "gumtree"){
 
@@ -721,6 +725,18 @@ app.get('/compress', function(req, res) {
 	res.send('Compressing the data');
   	compress()
   	.then(e=>{log("Finished compressing")})
+  	
+
+ 
+});
+
+app.get('/heatmap', function(req, res) {
+	
+	firebase.database()
+	.ref('/bigz/').once('value')
+	.then(function(snapshot) {
+		var bigz = snapshot.val()
+	})
   	
 
  

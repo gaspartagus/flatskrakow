@@ -138,7 +138,7 @@ function downloadSmalls(){
 		if(map){
 			addMarkers();
 			addDialogs();
-			openId();
+			// openId();
 		}
 		// log(zstr,LZString.decompress(LZString.compress("srkjghalkhg.kwalufhsawlriuskdghjk.fe")))
 	});
@@ -167,7 +167,7 @@ function saveFlats(fl){
 		}
 		// console.log(fl[i])
 	}
-	addId();
+	// addId();
 }
 
 database.ref("lastupdate").on('value', function(snapshot) {
@@ -187,16 +187,16 @@ function initMap() {
 		center: krakow,
 		styles: material
 	});
-	blueMarker = new google.maps.Marker({
-		position: krakow,
-		map: map,
-		title: "The others",
-		icon: blueIcon
-	});
+	// blueMarker = new google.maps.Marker({
+	// 	position: krakow,
+	// 	map: map,
+	// 	title: "The others",
+	// 	icon: blueIcon
+	// });
 	if(flats.length){
 		addMarkers();
 		addDialogs();
-		openId();
+		// openId();
 	}
 }
 var openDialog;
@@ -246,34 +246,34 @@ function addDialogs(){
 		// }
 	})
 
-	if(blueInfoWindow){
-		blueInfoWindow.setContent(bezText)
+	// if(blueInfoWindow){
+	// 	blueInfoWindow.setContent(bezText)
 
-	} else {
+	// } else {
 
-		blueInfoWindow = new google.maps.InfoWindow({
-			content: bezText
-		});
-		// console.log(infowindow)
+	// 	blueInfoWindow = new google.maps.InfoWindow({
+	// 		content: bezText
+	// 	});
+	// 	// console.log(infowindow)
 
-		blueMarker.addListener('click', function listener(){
-			blueInfoWindow.open(map, blueMarker);
+	// 	blueMarker.addListener('click', function listener(){
+	// 		blueInfoWindow.open(map, blueMarker);
 
-			if(openDialog == blueInfoWindow){
-				blueInfoWindow.close();
-				openDialog = "";
-				return true;
-			}
-			if(openDialog){
-				openDialog.close();
-			}
-			openDialog = blueInfoWindow;
-		});
+	// 		if(openDialog == blueInfoWindow){
+	// 			blueInfoWindow.close();
+	// 			openDialog = "";
+	// 			return true;
+	// 		}
+	// 		if(openDialog){
+	// 			openDialog.close();
+	// 		}
+	// 		openDialog = blueInfoWindow;
+	// 	});
 
-		blueInfoWindow.addListener('closeclick', function(){
-			openDialog = "";
-		})
-	}
+	// 	blueInfoWindow.addListener('closeclick', function(){
+	// 		openDialog = "";
+	// 	})
+	// }
 	// blueMarker.addListener('click', listener);
 }
 
